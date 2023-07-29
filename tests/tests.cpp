@@ -1,18 +1,31 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-#include <RtAudioWrapper/RtAudioWrapper.hpp>
+#include <iostream>
+#include <rtaudio/RtAudio.h>
 
-// Check out doctest's documentation: https://github.com/doctest/doctest/blob/master/doc/markdown/tutorial.md
+int main(){
 
-int factorial(int number)
-{
-    return number <= 1 ? number : factorial(number - 1) * number;
-}
+	RtAudio audio;
 
-TEST_CASE("testing the factorial function")
-{
-    CHECK(factorial(1) == 1);
-    CHECK(factorial(2) == 2);
-    CHECK(factorial(3) == 6);
-    CHECK(factorial(10) == 3628800);
+
+	// Get the list of device IDs
+	std::vector<RtAudio::Api> apis;
+	RtAudio::getCompiledApi(apis);
+	if (apis[0] == RtAudio::Api::RTAUDIO_DUMMY ){
+		std::cout << "No api found\n";
+		return 1;
+	}
+	std::vector< unsigned int > ids = audio.getDeviceIds();
+	if ( ids.size() == 0 ) {
+		std::cout << "No devices found." << std::endl;
+	} else {
+		// Scan through devices for various capabilities
+		RtAudio::DeviceInfo info;
+		for ( unsigned int n=0; n<ids.size(); n++ ) {
+
+			info = audio.getDeviceInfo( ids[n] );
+
+			// Print, for example, the name and maximum number of output channels for each device
+			std::cout << "device name = " << info.name << std::endl;
+			std::cout << ": maximum output channels = " << info.outputChannels << std::endl;
+		}
+	}
 }

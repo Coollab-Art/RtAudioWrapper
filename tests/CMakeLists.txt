@@ -12,28 +12,9 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion -Wimplicit-fallthrough)
 endif()
 
-# ---Maybe enable warnings as errors---
-if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
-    if(MSVC)
-        target_compile_options(${PROJECT_NAME} PRIVATE /WX)
-    else()
-        target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
-    endif()
-endif()
-
 # ---Include our library---
 add_subdirectory(.. ${CMAKE_CURRENT_SOURCE_DIR}/build/RtAudioWrapper)
 target_link_libraries(${PROJECT_NAME} PRIVATE RtAudioWrapper::RtAudioWrapper)
-
-# ---Add doctest---
-include(FetchContent)
-FetchContent_Declare(
-    doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest
-    GIT_TAG b7c21ec5ceeadb4951b00396fc1e4642dd347e5f
-)
-FetchContent_MakeAvailable(doctest)
-target_link_libraries(${PROJECT_NAME} PRIVATE doctest::doctest)
 
 # ---Ignore .vscode/settings.json in Git---
 find_package(Git QUIET)
