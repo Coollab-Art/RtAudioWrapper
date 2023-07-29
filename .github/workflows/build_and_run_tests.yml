@@ -1,6 +1,6 @@
 name: Build and Run tests
 
-on: 
+on:
   push:
     branches: [ main ]
 
@@ -22,7 +22,7 @@ jobs:
         submodules: recursive
 
     - name: Configure CMake
-      run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl 
+      run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
 
     - name: Build
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
@@ -89,11 +89,13 @@ jobs:
     name: Linux GCC Debug
     runs-on: ubuntu-22.04
     steps:
+    - name: Install pulse
+      run: sudo apt install pulseaudio
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-    
-    
+
+
     - name: Configure CMake
       run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11
 
@@ -102,17 +104,19 @@ jobs:
 
     - name: Run
       run: ${{github.workspace}}/build/${{env.TARGET}}
-    
+
 #-----------------------------------------------------------------------------------------------
   Linux_GCC_Release:
     name: Linux GCC Release
     runs-on: ubuntu-22.04
     steps:
+    - name: Install pulse
+      run: sudo apt install pulseaudio
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-    
-    
+
+
     - name: Configure CMake
       run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11
 
@@ -124,14 +128,16 @@ jobs:
 
 #-----------------------------------------------------------------------------------------------
   Linux_Clang_Debug:
-    name: Linux Clang Debug 
+    name: Linux Clang Debug
     runs-on: ubuntu-22.04
     steps:
+    - name: Install pulse
+      run: sudo apt install pulseaudio
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-    
-    
+
+
     - name: Configure CMake
       run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
@@ -146,11 +152,13 @@ jobs:
     name: Linux Clang Release
     runs-on: ubuntu-22.04
     steps:
+    - name: Install pulse
+      run: sudo apt install pulseaudio
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-    
-    
+
+
     - name: Configure CMake
       run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
@@ -161,7 +169,7 @@ jobs:
       run: ${{github.workspace}}/build/${{env.TARGET}}
 
 #-----------------------------------------------------------------------------------------------
-  MacOS_GCC_Debug: 
+  MacOS_GCC_Debug:
     name: MacOS GCC Debug
     runs-on: macos-11
     steps:
@@ -176,10 +184,10 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
-    
+      run: ${{github.workspace}}/build/${{env.TARGET}}
+
 #-----------------------------------------------------------------------------------------------
-  MacOS_GCC_Release: 
+  MacOS_GCC_Release:
     name: MacOS GCC Release
     runs-on: macos-11
     steps:
@@ -198,7 +206,7 @@ jobs:
 
 #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Debug:
-    name: MacOS Clang Debug 
+    name: MacOS Clang Debug
     runs-on: macos-11
     steps:
     - uses: actions/checkout@v3
@@ -215,7 +223,7 @@ jobs:
       run: ${{github.workspace}}/build/${{env.TARGET}}
 
 #-----------------------------------------------------------------------------------------------
-  MacOS_Clang_Release: 
+  MacOS_Clang_Release:
     name: MacOS Clang Release
     runs-on: macos-11
     steps:
@@ -230,4 +238,4 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}}                 
+      run: ${{github.workspace}}/build/${{env.TARGET}}
