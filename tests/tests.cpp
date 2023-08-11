@@ -5,7 +5,7 @@
 
 // Two-channel wave generator.
 auto sound_generator( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-			double streamTime, RtAudioStreamStatus status, void *userData ) -> int
+			double streamTime, RtAudioStreamStatus status, void *userData) -> int
 	{
 	static float freq = 880.0;
 	static double x = 0;
@@ -18,7 +18,7 @@ auto sound_generator( void *outputBuffer, void *inputBuffer, unsigned int nBuffe
 	for ( i=0; i<nBufferFrames; i++ ) {
 		for ( j=0; j<2; j++ ) {
 		*buffer++ = lastValues[j];
-		lastValues[j] = sin(2*M_PI*freq*x);
+		lastValues[j] = 0.3*sin(2*M_PI*freq*x);
 		}
 		x+=1.f/44100.f;
 	}
@@ -79,15 +79,24 @@ int main(){
 						&bufferFrames,
 						&sound_generator,
 						(void *)&data );
-	std::cout << "Opening stream : " << err << "\n";
-	err = dac.startStream();
-	std::cout << "Starting stream : " << err << "\n";
 
-	char input;
-	std::cout << "\nPlaying ... press <enter> to quit.\n";
-	std::cin.get( input );
-	dac.stopStream();
-	std::cout << "Stoping stream : " << err << "\n";
+	std::cout << "Opening stream : " << err << "\n";
+	char input = '\n';
+	int playing = 0;
+	while (input == '\n') {
+		if (!playing) {
+			err = dac.startStream();
+			std::cout << "Starting stream : " << err << "\n";
+			std::cout << "\nPlaying ... press <enter> to stop.\n";
+			playing = 1;
+		} else {
+			err = dac.stopStream();
+			std::cout << "Stoping stream : " << err << "\n";
+			std::cout << "\nStopping ... press <enter> to play.\n";
+			playing = 0;
+		}
+		std::cin.get( input );
+	}
 
 	if ( dac.isStreamOpen() ) dac.closeStream();
 	return 0;
