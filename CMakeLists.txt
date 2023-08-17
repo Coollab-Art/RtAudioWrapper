@@ -5,7 +5,7 @@ add_library(RtAudioWrapper::RtAudioWrapper ALIAS RtAudioWrapper)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-target_sources(RtAudioWrapper PRIVATE rtaudio/RtAudio.cpp)
+target_sources(RtAudioWrapper PRIVATE rtaudio/RtAudio.cpp ./Wrapper.cpp )
 target_include_directories(RtAudioWrapper PUBLIC .)
 
 # -------------------------------------

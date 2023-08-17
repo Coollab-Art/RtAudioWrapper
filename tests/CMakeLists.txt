@@ -14,6 +14,7 @@ endif()
 
 # ---Include our library---
 add_subdirectory(.. ${CMAKE_CURRENT_SOURCE_DIR}/build/RtAudioWrapper)
+target_include_directories(RtAudioWrapper PUBLIC ..)
 target_link_libraries(${PROJECT_NAME} PRIVATE RtAudioWrapper::RtAudioWrapper)
 
 # ---Ignore .vscode/settings.json in Git---
