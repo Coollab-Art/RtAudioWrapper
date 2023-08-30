@@ -1,3 +1,5 @@
+#pragma once
+
 #include <rtaudio/RtAudio.h>
 #include <cmath>
 #include <cstdlib>
