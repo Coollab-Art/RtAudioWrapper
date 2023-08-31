@@ -97,6 +97,8 @@ void RtAudioWTest(bool is_ci)
     RtAudioErrorType err;
 
     wrap.open(std::vector<float>{}, 44100, 2, &sound_generator);
+    if (is_ci)
+        return;
     // wrap.open(&dummy_generator);
 
     char input   = '\n';
@@ -117,10 +119,7 @@ void RtAudioWTest(bool is_ci)
             std::cout << "\nStopping ... press <enter> to play.\n";
             playing = 0;
         }
-        if (is_ci)
-            input = ' ';
-        else
-            std::cin.get(input);
+        std::cin.get(input);
     }
     if (wrap.is_open())
     {
