@@ -10,6 +10,8 @@ void RtAudioTest();
 
 int main()
 {
+    auto p1 = RtAudioW::Player{};
+    auto p2 = std::move(p1); // Test that the move constructor works properly (original RtAudio lib had a bug in its move constructor)
     // devicesAPITest();
     // RtAudioTest();
     RtAudioWTest();
