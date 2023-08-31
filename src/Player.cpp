@@ -73,7 +73,7 @@ void Player::close()
 
 void Player::seek(float time_in_seconds)
 {
-    _cursor = static_cast<size_t>(_sample_rate * _data_channels_number * time_in_seconds);
+    _cursor = static_cast<size_t>(static_cast<float>(_sample_rate) * static_cast<float>(_data_channels_number) * time_in_seconds);
 }
 
 auto Player::get_data_at(size_t index) const
