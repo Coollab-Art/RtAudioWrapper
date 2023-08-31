@@ -1,8 +1,7 @@
-#include <rtaudio/RtAudio.h>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include "Wrapper.h"
+#include "RtAudioWrapper/RtAudioWrapper.hpp"
 
 auto sound_generator(void*, void*, unsigned int, double, RtAudioStreamStatus, void*) -> int;
 void devicesAPITest();
@@ -18,7 +17,7 @@ int main()
 }
 
 // Two-channel wave generator.
-auto sound_generator(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void* userData) -> int
+auto sound_generator(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus status, void* userData) -> int
 {
     static float  freq = 880.0;
     static double x    = 0;
@@ -39,7 +38,7 @@ auto sound_generator(void* outputBuffer, void* inputBuffer, unsigned int nBuffer
     if (freq > 200.0)
     {
         x = freq * x / (freq - 0.1); // "Connects" the successive sinusoids at the same value
-        freq -= 0.1;
+        freq -= 0.1f;
     }
     std::cout << freq << "\n";
     return 0;
@@ -116,7 +115,7 @@ void RtAudioWTest()
         }
         std::cin.get(input);
     }
-    if (wrap.isOpen())
+    if (wrap.is_open())
     {
         wrap.pause();
     }
