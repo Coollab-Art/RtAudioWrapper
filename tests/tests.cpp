@@ -19,13 +19,13 @@ int main()
 }
 
 // Two-channel wave generator.
-auto sound_generator(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus status, void* userData) -> int
+auto sound_generator(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus status, void* /* userData */) -> int
 {
     static float  freq = 880.0;
     static double x    = 0;
     unsigned int  i, j;
-    double*       buffer     = (double*)outputBuffer;
-    double*       lastValues = (double*)userData;
+    double*       buffer = (double*)outputBuffer;
+    // double*       lastValues = (double*)userData;
     if (status)
         std::cout << "Stream underflow detected!" << std::endl;
     // Write interleaved audio data.
@@ -46,7 +46,7 @@ auto sound_generator(void* outputBuffer, void* /* inputBuffer */, unsigned int n
     return 0;
 }
 
-auto dummy_generator(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void* userData) -> int
+auto dummy_generator(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus /* status */, void* /* userData */) -> int
 {
     double* buf = (double*)outputBuffer;
     for (size_t i = 0; i < nBufferFrames; i++)

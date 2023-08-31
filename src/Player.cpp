@@ -9,8 +9,9 @@
 
 namespace RtAudioW {
 
-Player::Player(int output_channels, int _play_rate)
-    : _play_rate(_play_rate), _output_channels_number(output_channels)
+Player::Player(unsigned int output_channels, unsigned int sample_rate)
+    : _sample_rate{sample_rate}
+    , _output_channels_number{output_channels}
 {
     assert(is_API_available());
     assert(is_device_available());
@@ -45,9 +46,9 @@ auto Player::open(std::vector<float> data, int sample_rate, int data_channels, R
     out                   = &_parameters;
     in                    = nullptr;
     _data_channels_number = data_channels;
-    _play_rate            = sample_rate;
+    _sample_rate          = sample_rate;
 
-    return _audio.openStream(out, in, RTAUDIO_FLOAT32, _play_rate, &_buffer_frames, callback, this);
+    return _audio.openStream(out, in, RTAUDIO_FLOAT32, _sample_rate, &_buffer_frames, callback, this);
 }
 
 auto Player::is_open() const -> bool
@@ -70,10 +71,9 @@ void Player::close()
     return _audio.closeStream();
 }
 
-auto Player::seek(float time_in_seconds) -> unsigned int
+void Player::seek(float time_in_seconds)
 {
-    _cursor = static_cast<unsigned int>(_play_rate * _data_channels_number * time_in_seconds);
-    return _cursor;
+    _cursor = static_cast<size_t>(_sample_rate * _data_channels_number * time_in_seconds);
 }
 
 auto Player::get_data_at(size_t index) const
@@ -83,20 +83,19 @@ auto Player::get_data_at(size_t index) const
     return _data[index];
 }
 
-auto Player::get_data_length() const -> unsigned int
+auto Player::get_data_length() const -> size_t
 {
     return _data.size();
 }
 
-auto Player::get_cursor() const -> unsigned int
+auto Player::get_cursor() const -> size_t
 {
     return _cursor;
 }
 
-auto Player::set_cursor(unsigned int position) -> unsigned int
+void Player::set_cursor(size_t position)
 {
     _cursor = position;
-    return _cursor;
 }
 
 auto Player::get_data_channels() const -> unsigned int
@@ -108,7 +107,7 @@ auto Player::get_output_channels() const -> unsigned int
     return _output_channels_number;
 }
 
-auto audio_through(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus status, void* userData) -> int
+auto audio_through(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus /* status */, void* userData) -> int
 {
     auto* buffer = (float*)outputBuffer;
     auto* rtawp  = (Player*)userData;

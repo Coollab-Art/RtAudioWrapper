@@ -7,7 +7,7 @@ add_library(RtAudioWrapper::RtAudioWrapper ALIAS RtAudioWrapper)
 target_compile_features(RtAudioWrapper PRIVATE cxx_std_11)
 
 # ---Add source files---
-if(WARNINGS_AS_ERRORS_FOR_EXE_PATH)
+if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
     target_include_directories(RtAudioWrapper PUBLIC include)
 else()
     target_include_directories(RtAudioWrapper SYSTEM PUBLIC include)
@@ -26,9 +26,9 @@ endif()
 # Maybe enable warnings as errors
 if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
     if(MSVC)
-        target_compile_options(exe_path PRIVATE /WX)
+        target_compile_options(RtAudioWrapper PRIVATE /WX)
     else()
-        target_compile_options(exe_path PRIVATE -Werror)
+        target_compile_options(RtAudioWrapper PRIVATE -Werror)
     endif()
 endif()
 
