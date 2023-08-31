@@ -50,32 +50,24 @@ pkg_check_modules(pulse libpulse-simple)
 
 # Check for known non-Linux unix-likes
 if(CMAKE_SYSTEM_NAME MATCHES "kNetBSD.*|NetBSD.*")
-    message(STATUS "NetBSD detected, using OSS")
     set(xBSD ON)
 elseif(UNIX AND NOT APPLE)
     set(LINUX ON)
 endif()
 
-# Necessary for Windows
-if(MINGW)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
-
-# Standard CMake options
-
-# Build Options
-# option(RTAUDIO_BUILD_PYTHON "Build PyRtAudio python bindings" OFF)
-# set(RTAUDIO_TARGETNAME_UNINSTALL "uninstall" CACHE STRING "Name of 'uninstall' build target")
-
 # API Options
-option(RTAUDIO_API_DS "Build DirectSound API" OFF)
-option(RTAUDIO_API_ASIO "Build ASIO API" OFF)
-option(RTAUDIO_API_WASAPI "Build WASAPI API" OFF)
-option(RTAUDIO_API_OSS "Build OSS4 API" ${xBSD})
-option(RTAUDIO_API_ALSA "Build ALSA API" ${LINUX})
-option(RTAUDIO_API_PULSE "Build PulseAudio API" ${pulse_FOUND})
-option(RTAUDIO_API_JACK "Build JACK audio server API" ${HAVE_JACK})
-option(RTAUDIO_API_CORE "Build CoreAudio API" ${APPLE})
+if(WIN32)
+    set(RTAUDIO_API_WASAPI ON)
+elseif(APPLE)
+    set(RTAUDIO_API_CORE ON)
+elseif(xBSD)
+    set(RTAUDIO_API_OSS ON)
+elseif(LINUX)
+    # TODO Which API do we use ? All ?
+    set(RTAUDIO_API_ALSA ON)
+    set(RTAUDIO_API_PULSE ON)
+    set(RTAUDIO_API_JACK ON)
+endif()
 
 # Tweak API-specific configuration.
 
@@ -95,7 +87,7 @@ if(RTAUDIO_API_JACK AND jack_FOUND)
 endif()
 
 # ALSA
-if(RTAUDIO_API_ALSA)
+if(${RTAUDIO_API_ALSA})
     set(NEED_PTHREAD ON)
     find_package(ALSA)
 
@@ -111,7 +103,7 @@ if(RTAUDIO_API_ALSA)
 endif()
 
 # OSS
-if(RTAUDIO_API_OSS)
+if(${RTAUDIO_API_OSS})
     set(NEED_PTHREAD ON)
     find_library(OSSAUDIO_LIB ossaudio)
 
@@ -126,7 +118,7 @@ if(RTAUDIO_API_OSS)
 endif()
 
 # Pulse
-if(RTAUDIO_API_PULSE)
+if(${RTAUDIO_API_PULSE})
     set(NEED_PTHREAD ON)
     find_library(PULSE_LIB pulse)
     find_library(PULSESIMPLE_LIB pulse-simple)
@@ -138,7 +130,7 @@ if(RTAUDIO_API_PULSE)
 endif()
 
 # CoreAudio
-if(RTAUDIO_API_CORE)
+if(${RTAUDIO_API_CORE})
     find_library(COREAUDIO_LIB CoreAudio)
     find_library(COREFOUNDATION_LIB CoreFoundation)
     list(APPEND LINKLIBS ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
@@ -147,43 +139,14 @@ if(RTAUDIO_API_CORE)
     list(APPEND API_LIST "core")
 endif()
 
-# ASIO
-if(RTAUDIO_API_ASIO)
-    set(NEED_WIN32LIBS ON)
-    include_directories(include)
-    list(APPEND rtaudio_SOURCES
-        include/asio.cpp
-        include/asiodrivers.cpp
-        include/asiolist.cpp
-        include/iasiothiscallresolver.cpp)
-    list(APPEND API_DEFS "-D__WINDOWS_ASIO__ ")
-    list(APPEND API_LIST "asio")
-endif()
-
-# DSound
-if(RTAUDIO_API_DS)
-    set(NEED_WIN32LIBS ON)
-    list(APPEND LINKLIBS dsound)
-    list(APPEND API_DEFS "-D__WINDOWS_DS__ ")
-    list(APPEND API_LIST "ds")
-endif()
-
 # WASAPI
-if(RTAUDIO_API_WASAPI)
-    include_directories(include)
-    set(NEED_WIN32LIBS ON)
-    list(APPEND LINKLIBS ksuser mfplat mfuuid wmcodecdspuuid)
+if(${RTAUDIO_API_WASAPI})
+    list(APPEND LINKLIBS ksuser mfplat mfuuid wmcodecdspuuid winmm ole32)
     list(APPEND API_DEFS "-D__WINDOWS_WASAPI__ ")
-    list(APPEND API_LIST "wasapi")
-endif()
-
-# Windows libs
-if(NEED_WIN32LIBS)
-    list(APPEND LINKLIBS winmm ole32)
 endif()
 
 # pthread
-if(NEED_PTHREAD)
+if(${NEED_PTHREAD})
     find_package(Threads REQUIRED
         CMAKE_THREAD_PREFER_PTHREAD
         THREADS_PREFER_PTHREAD_FLAG)
@@ -196,6 +159,6 @@ endforeach()
 
 target_link_libraries(RtAudioWrapper PRIVATE ${API_LIST})
 
-foreach(X IN LISTS API_DEFS)
-    set_source_files_properties(rtaudio/RtAudio.cpp PROPERTIES COMPILE_FLAGS ${X})
+foreach(API_DEF IN LISTS API_DEFS)
+    set_source_files_properties(lib/rtaudio/RtAudio.cpp PROPERTIES COMPILE_FLAGS ${API_DEF})
 endforeach()
