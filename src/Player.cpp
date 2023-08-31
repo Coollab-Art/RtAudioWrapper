@@ -41,7 +41,7 @@ auto Player::open(std::vector<float> data, int sample_rate, int data_channels, R
     RtAudio::StreamParameters* in;
 
     _data     = std::move(data);
-    _duration = (float)_data.size() / data_channels / sample_rate;
+    _duration = static_cast<double>(_data.size()) / static_cast<double>(data_channels) / static_cast<double>(sample_rate);
 
     out                   = &_parameters;
     in                    = nullptr;
@@ -113,7 +113,7 @@ auto audio_through(void* output_buffer, void* /* input_buffer */, unsigned int n
     auto& player = *static_cast<Player*>(user_data);
 
     auto const output_channels = player.get_output_channels();
-    auto const data_channels   = player.get_data_channels(); // TODO regarder et utiliser les bonnes valeurs au bon endroit
+    // auto const data_channels   = player.get_data_channels(); // TODO regarder et utiliser les bonnes valeurs au bon endroit
     for (size_t i = 0; i < nBufferFrames; i++)
     {
         for (size_t channel = 0; channel < output_channels; ++channel)
