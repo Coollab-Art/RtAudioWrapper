@@ -138,7 +138,6 @@ if(${RTAUDIO_API_CORE})
     list(APPEND LINKLIBS ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
     list(APPEND LIBS_REQUIRES "-framework CoreAudio -framework CoreFoundation")
     list(APPEND API_DEFS "-D__MACOSX_CORE__ ")
-    list(APPEND API_LIST "core")
 endif()
 
 # WASAPI
