@@ -166,3 +166,8 @@ target_link_libraries(RtAudioWrapper PRIVATE ${API_LIST})
 foreach(API_DEF IN LISTS API_DEFS)
     set_source_files_properties(lib/rtaudio/RtAudio.cpp PROPERTIES COMPILE_FLAGS ${API_DEF})
 endforeach()
+
+# ---Hack to make CI work---
+if(RT_AUDIO_WRAPPER_DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE)
+    target_compile_definitions(RtAudioWrapper PRIVATE "DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE")
+endif()

@@ -13,8 +13,10 @@ Player::Player(unsigned int output_channels, unsigned int sample_rate)
     : _sample_rate{sample_rate}
     , _output_channels_number{output_channels}
 {
+#if !defined(DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE)
     assert(is_API_available());
     assert(is_device_available());
+#endif
 
     _parameters.deviceId     = _audio.getDefaultOutputDevice();
     _parameters.firstChannel = 0;
