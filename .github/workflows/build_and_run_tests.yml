@@ -27,7 +27,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\build\Debug\${{env.TARGET}}
+        run: ${{github.workspace}}\build\Debug\${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Windows_MSVC_Release:
@@ -45,7 +45,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\build\Release\${{env.TARGET}}
+        run: ${{github.workspace}}\build\Release\${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Windows_Clang_Debug:
@@ -63,7 +63,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\build\Debug\${{env.TARGET}}
+        run: ${{github.workspace}}\build\Debug\${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Windows_Clang_Release:
@@ -81,7 +81,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\build\Release\${{env.TARGET}}
+        run: ${{github.workspace}}\build\Release\${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Linux_GCC_Debug:
@@ -101,7 +101,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Linux_GCC_Release:
@@ -121,7 +121,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Linux_Clang_Debug:
@@ -141,7 +141,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   Linux_Clang_Release:
@@ -161,7 +161,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   MacOS_GCC_Debug:
@@ -179,7 +179,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   MacOS_GCC_Release:
@@ -197,7 +197,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Debug:
@@ -215,7 +215,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI
 
   #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Release:
@@ -233,4 +233,4 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/build/${{env.TARGET}}
+        run: ${{github.workspace}}/build/${{env.TARGET}} -CI

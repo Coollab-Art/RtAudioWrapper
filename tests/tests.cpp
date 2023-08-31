@@ -5,16 +5,18 @@
 
 auto sound_generator(void*, void*, unsigned int, double, RtAudioStreamStatus, void*) -> int;
 void devicesAPITest();
-void RtAudioWTest();
+void RtAudioWTest(bool is_ci);
 void RtAudioTest();
 
-int main()
+auto main(int argc, char* argv[]) -> int
 {
+    bool const is_ci = argc > 1 && strcmp(argv[1], "-CI") == 0; // NOLINT(*pointer-arithmetic)
+
     auto p1 = RtAudioW::Player{};
     auto p2 = std::move(p1); // Test that the move constructor works properly (original RtAudio lib had a bug in its move constructor)
     // devicesAPITest();
     // RtAudioTest();
-    RtAudioWTest();
+    RtAudioWTest(is_ci);
     return 0;
 }
 
@@ -89,7 +91,7 @@ void devicesAPITest()
     }
 }
 
-void RtAudioWTest()
+void RtAudioWTest(bool is_ci)
 {
     RtAudioW::Player wrap;
     RtAudioErrorType err;
@@ -115,7 +117,10 @@ void RtAudioWTest()
             std::cout << "\nStopping ... press <enter> to play.\n";
             playing = 0;
         }
-        std::cin.get(input);
+        if (is_ci)
+            input = ' ';
+        else
+            std::cin.get(input);
     }
     if (wrap.is_open())
     {
