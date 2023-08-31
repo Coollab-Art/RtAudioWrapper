@@ -33,7 +33,7 @@ auto Player::is_device_available() -> bool
     return !_audio.getDeviceIds().empty();
 }
 
-auto Player::open(std::vector<float> data, int sample_rate, int data_channels, RtAudioCallback callback) -> RtAudioErrorType
+auto Player::open(std::vector<float> data, unsigned int sample_rate, unsigned int data_channels, RtAudioCallback callback) -> RtAudioErrorType
 {
     if (is_open()) // TODO tester que ça marche quand on ouvre un deuxième stream audio
         close();

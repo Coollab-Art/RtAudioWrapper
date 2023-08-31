@@ -25,7 +25,7 @@ private:
 public:
     explicit Player(unsigned int output_channels = 2, unsigned int sample_rate = 44100);
 
-    auto open(std::vector<float> data, int sample_rate = 44100, int data_channels = 2, RtAudioCallback callback = &audio_through) -> RtAudioErrorType;
+    auto open(std::vector<float> data, unsigned int sample_rate = 44100, unsigned int data_channels = 2, RtAudioCallback callback = &audio_through) -> RtAudioErrorType;
     auto is_open() const -> bool;
     auto play() -> RtAudioErrorType;
     auto pause() -> RtAudioErrorType;
