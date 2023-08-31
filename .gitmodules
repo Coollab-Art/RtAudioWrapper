@@ -1,6 +1,6 @@
 [submodule "tooling"]
 	path = tooling
 	url = https://github.com/CoolLibs/tooling
-[submodule "rtaudio"]
-	path = rtaudio
-	url = https://github.com/thestk/rtaudio.git
+[submodule "lib/rtaudio"]
+	path = lib/rtaudio
+	url = https://github.com/CoolLibs/rtaudio
