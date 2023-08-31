@@ -21,7 +21,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
+        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl -D IS_CI
 
       - name: Build
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}

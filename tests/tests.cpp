@@ -1,3 +1,7 @@
+#if IS_CI
+#define NDEBUG // Disable asserts that check that an API and a device are available
+#endif
+
 #include <cmath>
 #include <cstdlib>
 #include <iostream>

@@ -16,7 +16,7 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion -Wimplicit-fallthrough)
 endif()
 
-# Maybe enable warnings as errors
+# ---Maybe enable warnings as errors---
 set(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER OFF CACHE BOOL "ON iff you want to treat warnings as errors")
 
 if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
@@ -25,6 +25,11 @@ if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
     else()
         target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
     endif()
+endif()
+
+# ---Hack to make CI work---
+if(IS_CI)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE "IS_CI")
 endif()
 
 # ---Ignore .vscode/settings.json in Git---
