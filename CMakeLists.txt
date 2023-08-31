@@ -33,8 +33,10 @@ if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
 endif()
 
 # Add RtAudioLibrary
-target_sources(RtAudioWrapper PRIVATE lib/rtaudio/RtAudio.cpp)
-target_include_directories(RtAudioWrapper PUBLIC lib)
+add_library(rtaudio)
+target_sources(rtaudio PRIVATE lib/rtaudio/RtAudio.cpp)
+target_include_directories(rtaudio PUBLIC lib)
+target_link_libraries(RtAudioWrapper PUBLIC rtaudio)
 
 # Check for Jack (any OS)
 find_library(JACK_LIB jack)
