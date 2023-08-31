@@ -107,25 +107,25 @@ auto Player::get_output_channels() const -> unsigned int
     return _output_channels_number;
 }
 
-auto audio_through(void* outputBuffer, void* /* inputBuffer */, unsigned int nBufferFrames, double /* streamTime */, RtAudioStreamStatus /* status */, void* userData) -> int
+auto audio_through(void* output_buffer, void* /* input_buffer */, unsigned int nBufferFrames, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int
 {
-    auto* buffer = (float*)outputBuffer;
-    auto* rtawp  = (Player*)userData;
+    auto* buffer = static_cast<float*>(output_buffer);
+    auto& player = *static_cast<Player*>(user_data);
 
-    auto const output_channels = rtawp->get_output_channels();
-    auto const data_channels   = rtawp->get_data_channels(); // TODO regarder et utiliser les bonnes valeurs au bon endroit
+    auto const output_channels = player.get_output_channels();
+    auto const data_channels   = player.get_data_channels(); // TODO regarder et utiliser les bonnes valeurs au bon endroit
     for (size_t i = 0; i < nBufferFrames; i++)
     {
         for (size_t channel = 0; channel < output_channels; ++channel)
         {
             auto const index_in_buffer = i * output_channels + channel;
-            buffer[index_in_buffer]    = rtawp->get_data_at(rtawp->get_cursor() + index_in_buffer);
+            buffer[index_in_buffer]    = player.get_data_at(player.get_cursor() + index_in_buffer);
         }
     }
 
-    rtawp->set_cursor(rtawp->get_cursor() + nBufferFrames * output_channels);
-    if (rtawp->get_cursor() > rtawp->get_data_length())
-        rtawp->set_cursor(0); // Loop from 0
+    player.set_cursor(player.get_cursor() + nBufferFrames * output_channels);
+    if (player.get_cursor() > player.get_data_length())
+        player.set_cursor(0); // Loop from 0
 
     return 0;
 }
