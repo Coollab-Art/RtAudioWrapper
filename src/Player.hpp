@@ -34,10 +34,15 @@ public:
     auto get_cursor() const -> size_t;
     void set_cursor(size_t position);
 
+    auto get_volume() const -> float { return _volume; }
+    void set_volume(float volume) { _volume = volume; }
+
     auto is_API_available() const -> bool;
     auto is_device_available() -> bool;
 
 private:
+    friend auto audio_through(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void* userData) -> int;
+
     RtAudio                   _audio; // Owns the stream, we need one RtAudio per Player.
     RtAudio::StreamParameters _parameters;
     unsigned int              _sample_rate;
@@ -46,6 +51,8 @@ private:
     double                    _duration{0};
     std::vector<float>        _data{};
     unsigned int              _data_channels_number{2};
+
+    float _volume{1.f};
 };
 
 } // namespace RtAudioW

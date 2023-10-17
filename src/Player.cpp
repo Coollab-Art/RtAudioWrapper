@@ -111,7 +111,7 @@ auto audio_through(void* output_buffer, void* /* input_buffer */, unsigned int n
         for (size_t channel = 0; channel < output_channels_count; ++channel)
         {
             auto const index_in_buffer = i * output_channels_count + channel;
-            buffer[index_in_buffer]    = player.get_data_at(player.get_cursor() + index_in_buffer);
+            buffer[index_in_buffer]    = player.get_data_at(player.get_cursor() + index_in_buffer) * player._volume;
         }
     }
 
