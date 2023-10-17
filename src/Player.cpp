@@ -9,9 +9,9 @@
 
 namespace RtAudioW {
 
-Player::Player(unsigned int output_channels, unsigned int sample_rate)
-    : _sample_rate{sample_rate}
-    , _output_channels_number{output_channels}
+static constexpr size_t output_channels_count = 2;
+
+Player::Player()
 {
 #if !defined(DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE)
     assert(is_API_available());
@@ -20,7 +20,7 @@ Player::Player(unsigned int output_channels, unsigned int sample_rate)
 
     _parameters.deviceId     = _audio.getDefaultOutputDevice();
     _parameters.firstChannel = 0;
-    _parameters.nChannels    = output_channels;
+    _parameters.nChannels    = output_channels_count;
 }
 
 auto Player::is_API_available() const -> bool
@@ -45,7 +45,7 @@ auto Player::open(std::vector<float> data, unsigned int sample_rate, unsigned in
     _data     = std::move(data);
     _duration = static_cast<double>(_data.size()) / static_cast<double>(data_channels) / static_cast<double>(sample_rate);
 
-    out                   = &_parameters;
+    out                   = &_parameters; // TODO can't we create params on the fly ? Or do we really need to keep them alive ?
     in                    = nullptr;
     _data_channels_number = data_channels;
     _sample_rate          = sample_rate;
@@ -100,32 +100,22 @@ void Player::set_cursor(size_t position)
     _cursor = position;
 }
 
-auto Player::get_data_channels() const -> unsigned int
-{
-    return _data_channels_number;
-}
-auto Player::get_output_channels() const -> unsigned int
-{
-    return _output_channels_number;
-}
-
 auto audio_through(void* output_buffer, void* /* input_buffer */, unsigned int nBufferFrames, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int
 {
     auto* buffer = static_cast<float*>(output_buffer);
     auto& player = *static_cast<Player*>(user_data);
 
-    auto const output_channels = player.get_output_channels();
     // auto const data_channels   = player.get_data_channels(); // TODO regarder et utiliser les bonnes valeurs au bon endroit
     for (size_t i = 0; i < nBufferFrames; i++)
     {
-        for (size_t channel = 0; channel < output_channels; ++channel)
+        for (size_t channel = 0; channel < output_channels_count; ++channel)
         {
-            auto const index_in_buffer = i * output_channels + channel;
+            auto const index_in_buffer = i * output_channels_count + channel;
             buffer[index_in_buffer]    = player.get_data_at(player.get_cursor() + index_in_buffer);
         }
     }
 
-    player.set_cursor(player.get_cursor() + nBufferFrames * output_channels);
+    player.set_cursor(player.get_cursor() + nBufferFrames * output_channels_count);
     if (player.get_cursor() > player.get_data_length())
         player.set_cursor(0); // Loop from 0
 
