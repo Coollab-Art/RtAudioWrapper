@@ -11,115 +11,162 @@ namespace RtAudioW {
 
 static constexpr size_t output_channels_count = 2;
 
-Player::Player()
-{
-#if !defined(DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE)
-    assert(is_API_available());
-    assert(is_device_available());
-#endif
-
-    _parameters.deviceId     = _audio.getDefaultOutputDevice();
-    _parameters.firstChannel = 0;
-    _parameters.nChannels    = output_channels_count;
-}
-
-auto Player::is_API_available() const -> bool
+static auto is_API_available() -> bool
 {
     std::vector<RtAudio::Api> apis;
     RtAudio::getCompiledApi(apis);
     return apis[0] != RtAudio::Api::RTAUDIO_DUMMY;
 }
 
-auto Player::is_device_available() -> bool
+Player::Player()
 {
-    return !_audio.getDeviceIds().empty();
+    update_device_if_necessary();
+#if !defined(DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE)
+    assert(is_API_available());
+    // assert(is_device_available()); // TODO(Audio) Device should not be an assert, but a warning
+#endif
 }
 
-auto Player::open(std::vector<float> data, unsigned int sample_rate, unsigned int data_channels, RtAudioCallback callback) -> RtAudioErrorType
+void Player::update_device_if_necessary()
 {
-    if (is_open()) // TODO tester que ça marche quand on ouvre un deuxième stream audio
-        close();
-    RtAudio::StreamParameters* out;
-    RtAudio::StreamParameters* in;
+    auto const id = _backend.getDefaultOutputDevice();
+    if (id == _current_output_device_id)
+        return;
 
-    _data     = std::move(data);
-    _duration = static_cast<double>(_data.size()) / static_cast<double>(data_channels) / static_cast<double>(sample_rate);
-
-    out                   = &_parameters; // TODO can't we create params on the fly ? Or do we really need to keep them alive ?
-    in                    = nullptr;
-    _data_channels_number = data_channels;
-    _sample_rate          = sample_rate;
-
-    return _audio.openStream(out, in, RTAUDIO_FLOAT32, _sample_rate, &_buffer_frames, callback, this);
+    _current_output_device_id = id;
+    recreate_stream_adapted_to_current_audio_data();
 }
 
-auto Player::is_open() const -> bool
+auto Player::has_audio_data() const -> bool
 {
-    return _audio.isStreamOpen();
+    return !_data.samples.empty();
+}
+
+auto Player::has_device() const -> bool
+{
+    return _current_output_device_id != 0;
+}
+
+void Player::recreate_stream_adapted_to_current_audio_data()
+{
+    if (_backend.isStreamOpen())
+        _backend.closeStream();
+
+    if (!has_audio_data()
+        || !has_device())
+        return;
+
+    RtAudio::StreamParameters _parameters;
+    _parameters.deviceId     = _current_output_device_id; // TODO(Audio) what happens when we unplug the current output device ?
+    _parameters.firstChannel = 0;
+    _parameters.nChannels    = output_channels_count;
+    // _backend.getDeviceInfo(_parameters.deviceId).nativeFormats; // TODO(Audio) error if doesn't support FLOAT32
+
+    unsigned int nb_frames_per_callback{128 /*256*/}; // TODO(Audio) Try setting to 0?
+    // TODO(Audio) Try settings the RTAUDIO_MINIMIZE_LATENCY flag?
+    // RtAudioStreamFlags
+    // TODO(Audio) Fix grésillement when changing volume with headphones
+    // TODO(Audio) TODO(Philippe) Resampler l'audio pour qu'il match le preferredSampleRate du device
+    // auto const sr = _backend.getDeviceInfo(_parameters.deviceId).sampleRates;
+    // std::cout << _sample_rate << '\n';
+    _backend.openStream(
+        &_parameters,
+        nullptr,
+        RTAUDIO_FLOAT32,
+        // _backend.getDeviceInfo(_parameters.deviceId).preferredSampleRate,
+        _data.sample_rate,
+        &nb_frames_per_callback,
+        &audio_callback, // TODO(Audio) Can't move a Player because of the Callback
+        this
+    );
+
+    if (_play_has_been_requested)
+        _backend.startStream();
+}
+
+void Player::set_audio_data(AudioData data)
+{
+    _data = std::move(data);
+    recreate_stream_adapted_to_current_audio_data();
+}
+
+void Player::reset_audio_data()
+{
+    set_audio_data({});
 }
 
 auto Player::play() -> RtAudioErrorType
 {
-    return _audio.startStream();
+    _play_has_been_requested = true;
+    if (!_backend.isStreamOpen()      // We will start playing when we open the stream, i.e. when we receive audio data
+        || _backend.isStreamRunning() // The stream is already started, no need to do anything
+    )
+    {
+        return RtAudioErrorType::RTAUDIO_NO_ERROR;
+    }
+    return _backend.startStream();
 }
 
 auto Player::pause() -> RtAudioErrorType
 {
-    return _audio.stopStream();
+    _play_has_been_requested = false;
+    if (!_backend.isStreamRunning() /* The stream is already inactive, no need to do anything */)
+        return RtAudioErrorType::RTAUDIO_NO_ERROR;
+    return _backend.stopStream();
 }
 
-void Player::close()
+void Player::set_time(float time_in_seconds)
 {
-    return _audio.closeStream();
+    // TODO(Audio) Store the desired time in seconds too, so that if we switch to an audio data with a different sample rate, we can adjust the _next_frame_to_play to make it match the actual time in seconds.
+    _next_frame_to_play = static_cast<size_t>(
+        static_cast<float>(_data.sample_rate)
+        * time_in_seconds
+    );
 }
 
-void Player::seek(float time_in_seconds)
+auto Player::get_time() const -> float
 {
-    _cursor = static_cast<size_t>(static_cast<float>(_sample_rate) * static_cast<float>(_data_channels_number) * time_in_seconds);
+    // TODO(Audio) return the stored desired time and handle when no data (sample_rate == 0)
+    return static_cast<float>(_next_frame_to_play)
+           / static_cast<float>(_data.sample_rate);
 }
 
-auto Player::get_data_at(size_t index) const
+auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int frames_count, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int
 {
-    if (index >= _data.size())
-        return 0.f;
-    return _data[index];
-}
+    auto* out_buffer = static_cast<float*>(output_buffer);
+    auto& player     = *static_cast<Player*>(user_data);
 
-auto Player::get_data_length() const -> size_t
-{
-    return _data.size();
-}
-
-auto Player::get_cursor() const -> size_t
-{
-    return _cursor;
-}
-
-void Player::set_cursor(size_t position)
-{
-    _cursor = position;
-}
-
-auto audio_through(void* output_buffer, void* /* input_buffer */, unsigned int nBufferFrames, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int
-{
-    auto* buffer = static_cast<float*>(output_buffer);
-    auto& player = *static_cast<Player*>(user_data);
-
-    // auto const data_channels   = player.get_data_channels(); // TODO regarder et utiliser les bonnes valeurs au bon endroit
-    for (size_t i = 0; i < nBufferFrames; i++)
+    for (size_t frame_idx = 0; frame_idx < frames_count; frame_idx++)
     {
-        for (size_t channel = 0; channel < output_channels_count; ++channel)
+        for (size_t channel_idx = 0; channel_idx < output_channels_count; ++channel_idx)
         {
-            auto const index_in_buffer = i * output_channels_count + channel;
-            buffer[index_in_buffer]    = player.get_data_at(player.get_cursor() + index_in_buffer) * player._volume;
+            out_buffer[frame_idx * output_channels_count + channel_idx] = // NOLINT(*pointer-arithmetic)
+                player.sample(player._next_frame_to_play, channel_idx);
         }
+        player._next_frame_to_play++;
     }
 
-    player.set_cursor(player.get_cursor() + nBufferFrames * output_channels_count);
-    if (player.get_cursor() > player.get_data_length())
-        player.set_cursor(0); // Loop from 0
-
     return 0;
+}
+
+auto Player::sample(size_t frame_index, size_t channel_index) -> float
+{
+    if (_properties.is_muted)
+        return 0.f;
+
+    auto const sample_index = frame_index * _data.channels_count
+                              + channel_index % _data.channels_count;
+    if (sample_index >= _data.samples.size() && !_properties.does_loop)
+        return 0.f;
+
+    return _data.samples[sample_index % _data.samples.size()]
+           * _properties.volume;
+}
+
+auto player() -> Player&
+{
+    static auto instance = Player{};
+    return instance;
 }
 
 } // namespace RtAudioW
