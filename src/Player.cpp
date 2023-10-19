@@ -57,7 +57,7 @@ void Player::recreate_stream_adapted_to_current_audio_data()
         return;
 
     RtAudio::StreamParameters _parameters;
-    _parameters.deviceId     = _current_output_device_id; // TODO(Audio) what happens when we unplug the current output device ?
+    _parameters.deviceId     = _current_output_device_id;
     _parameters.firstChannel = 0;
     _parameters.nChannels    = output_channels_count;
     // _backend.getDeviceInfo(_parameters.deviceId).nativeFormats; // TODO(Audio) error if doesn't support FLOAT32
@@ -74,7 +74,7 @@ void Player::recreate_stream_adapted_to_current_audio_data()
         nullptr,
         RTAUDIO_FLOAT32,
         // _backend.getDeviceInfo(_parameters.deviceId).preferredSampleRate,
-        _data.sample_rate,
+        _data.sample_rate, // TODO(Audio) Error when the device does not support this sample_rate
         &nb_frames_per_callback,
         &audio_callback, // TODO(Audio) Can't move a Player because of the Callback
         this
@@ -120,7 +120,7 @@ void Player::set_time(float time_in_seconds)
     // TODO(Audio) Store the desired time in seconds too, so that if we switch to an audio data with a different sample rate, we can adjust the _next_frame_to_play to make it match the actual time in seconds.
     _next_frame_to_play = static_cast<size_t>(
         static_cast<float>(_data.sample_rate)
-        * time_in_seconds
+            * time_in_seconds
     );
 }
 
