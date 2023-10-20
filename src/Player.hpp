@@ -56,7 +56,9 @@ public:
     auto has_audio_data() const -> bool;
 
     /// Returns the value of the audio data at the given position, while taking all the player properties into account.
-    auto sample(int64_t frame_index, int64_t channel_index) -> float;
+    auto sample(int64_t frame_index, int64_t channel_index) const -> float;
+    /// Returns the value of the audio data at the given position, while ignoring `volume` and `is_muted` properties. It still takes `does_loop` into account.
+    auto sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float;
 
     /// Used to get and set the properties.
     auto properties() -> PlayerProperties& { return _properties; }

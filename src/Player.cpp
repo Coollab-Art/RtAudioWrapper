@@ -148,11 +148,15 @@ static auto mod(int64_t a, int64_t b) -> int64_t
     return res;
 }
 
-auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
+auto Player::sample(int64_t frame_index, int64_t channel_index) const -> float
 {
     if (_properties.is_muted)
         return 0.f;
+    return _properties.volume * sample_unaltered_volume(frame_index, channel_index);
+}
 
+auto Player::sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float
+{
     auto const sample_index = frame_index * _data.channels_count
                               + channel_index % _data.channels_count;
     if ((sample_index < 0
@@ -161,8 +165,7 @@ auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
         && !_properties.does_loop)
         return 0.f;
 
-    return _data.samples[static_cast<size_t>(mod(sample_index, static_cast<int64_t>(_data.samples.size())))]
-           * _properties.volume;
+    return _data.samples[static_cast<size_t>(mod(sample_index, static_cast<int64_t>(_data.samples.size())))];
 }
 
 void set_error_callback(RtAudioErrorCallback callback)
