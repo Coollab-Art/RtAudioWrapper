@@ -163,7 +163,7 @@ auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
         && !_properties.does_loop)
         return 0.f;
 
-    return _data.samples[mod(sample_index, static_cast<int64_t>(_data.samples.size()))]
+    return _data.samples[static_cast<size_t>(mod(sample_index, static_cast<int64_t>(_data.samples.size())))]
            * _properties.volume;
 }
 
