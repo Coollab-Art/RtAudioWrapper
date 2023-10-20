@@ -6,12 +6,14 @@ namespace RtAudioW {
 
 static constexpr int64_t output_channels_count = 2;
 
+#ifndef NDEBUG // Only used by the assert, so unused in Release, which would cause a warning.
 static auto is_API_available() -> bool
 {
     std::vector<RtAudio::Api> apis;
     RtAudio::getCompiledApi(apis);
     return apis[0] != RtAudio::Api::RTAUDIO_DUMMY;
 }
+#endif
 
 Player::Player()
 {
