@@ -40,9 +40,6 @@ target_link_libraries(RtAudioWrapper PUBLIC rtaudio)
 
 find_package(PkgConfig)
 
-# Check for Pulse (any OS)
-pkg_check_modules(pulse libpulse-simple)
-
 # Check for known non-Linux unix-likes
 if(CMAKE_SYSTEM_NAME MATCHES "kNetBSD.*|NetBSD.*")
     set(xBSD ON)
@@ -60,6 +57,11 @@ elseif(xBSD)
 elseif(LINUX)
     set(RTAUDIO_API_ALSA ON)
     set(RTAUDIO_API_PULSE ON)
+endif()
+
+# Check for Pulse
+if(LINUX)
+    pkg_check_modules(pulse libpulse-simple)
 endif()
 
 # Tweak API-specific configuration.
