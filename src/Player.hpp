@@ -1,11 +1,8 @@
 #pragma once
 
 #include <rtaudio/RtAudio.h>
-#include <cmath>
 #include <cstdint>
-#include <cstdlib>
-#include <iostream>
-#include <memory>
+#include <vector>
 
 namespace RtAudioW {
 

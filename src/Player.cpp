@@ -1,12 +1,6 @@
 #include "Player.hpp"
-#include <rtaudio/RtAudio.h>
 #include <cassert>
-#include <cmath>
 #include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <memory>
 
 namespace RtAudioW {
 
