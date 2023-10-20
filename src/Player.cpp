@@ -42,6 +42,24 @@ auto Player::has_device() const -> bool
     return _current_output_device_id != 0;
 }
 
+auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int frames_count, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int
+{
+    auto* out_buffer = static_cast<float*>(output_buffer);
+    auto& player     = *static_cast<Player*>(user_data);
+
+    for (int64_t frame_idx = 0; frame_idx < frames_count; frame_idx++)
+    {
+        for (int64_t channel_idx = 0; channel_idx < output_channels_count; ++channel_idx)
+        {
+            out_buffer[frame_idx * output_channels_count + channel_idx] = // NOLINT(*pointer-arithmetic)
+                player.sample(player._next_frame_to_play, channel_idx);
+        }
+        player._next_frame_to_play++;
+    }
+
+    return 0;
+}
+
 void Player::recreate_stream_adapted_to_current_audio_data()
 {
     if (_backend.isStreamOpen())
@@ -124,24 +142,6 @@ auto Player::get_time() const -> float
     // TODO(Audio) return the stored desired time and handle when no data (sample_rate == 0)
     return static_cast<float>(_next_frame_to_play)
            / static_cast<float>(_data.sample_rate);
-}
-
-auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int frames_count, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int
-{
-    auto* out_buffer = static_cast<float*>(output_buffer);
-    auto& player     = *static_cast<Player*>(user_data);
-
-    for (int64_t frame_idx = 0; frame_idx < frames_count; frame_idx++)
-    {
-        for (int64_t channel_idx = 0; channel_idx < output_channels_count; ++channel_idx)
-        {
-            out_buffer[frame_idx * output_channels_count + channel_idx] = // NOLINT(*pointer-arithmetic)
-                player.sample(player._next_frame_to_play, channel_idx);
-        }
-        player._next_frame_to_play++;
-    }
-
-    return 0;
 }
 
 static auto mod(int64_t a, int64_t b) -> int64_t
