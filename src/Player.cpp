@@ -93,7 +93,11 @@ void Player::recreate_stream_adapted_to_current_audio_data()
 
 void Player::set_audio_data(AudioData data)
 {
+    float const current_time = get_time();
+
     _data = std::move(data);
+    set_time(current_time); // Need to adjust the _next_frame_to_play so that we will be at the same point in time in both audios even if they have different sample rates.
+
     recreate_stream_adapted_to_current_audio_data();
 }
 
@@ -121,7 +125,6 @@ void Player::pause()
 
 void Player::set_time(float time_in_seconds)
 {
-    // TODO(Audio) Store the desired time in seconds too, so that if we switch to an audio data with a different sample rate, we can adjust the _next_frame_to_play to make it match the actual time in seconds.
     _next_frame_to_play = static_cast<int64_t>(
         static_cast<float>(_data.sample_rate)
         * time_in_seconds
@@ -130,7 +133,8 @@ void Player::set_time(float time_in_seconds)
 
 auto Player::get_time() const -> float
 {
-    // TODO(Audio) return the stored desired time and handle when no data (sample_rate == 0)
+    if (_data.sample_rate == 0)
+        return 0.f;
     return static_cast<float>(_next_frame_to_play)
            / static_cast<float>(_data.sample_rate);
 }
