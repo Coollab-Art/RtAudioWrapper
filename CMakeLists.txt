@@ -35,17 +35,10 @@ endif()
 # Add RtAudioLibrary
 add_library(rtaudio)
 target_sources(rtaudio PRIVATE lib/rtaudio/RtAudio.cpp)
-target_include_directories(rtaudio PUBLIC lib)
+target_include_directories(rtaudio SYSTEM PUBLIC lib)
 target_link_libraries(RtAudioWrapper PUBLIC rtaudio)
 
-# Check for Jack (any OS)
-find_library(JACK_LIB jack)
 find_package(PkgConfig)
-pkg_check_modules(jack jack)
-
-if(JACK_LIB OR jack_FOUND)
-    set(HAVE_JACK TRUE)
-endif()
 
 # Check for Pulse (any OS)
 pkg_check_modules(pulse libpulse-simple)
@@ -68,25 +61,9 @@ elseif(LINUX)
     # TODO Which API do we use ? All ?
     set(RTAUDIO_API_ALSA ON)
     set(RTAUDIO_API_PULSE ON)
-    set(RTAUDIO_API_JACK ON)
 endif()
 
 # Tweak API-specific configuration.
-
-# Jack
-if(RTAUDIO_API_JACK AND jack_FOUND)
-    set(NEED_PTHREAD ON)
-    list(APPEND PKGCONFIG_REQUIRES "jack")
-    list(APPEND API_DEFS "-D__UNIX_JACK__ ")
-    list(APPEND API_LIST "jack")
-
-    if(jack_FOUND)
-        list(APPEND LINKLIBS ${jack_LIBRARIES})
-        list(APPEND INCDIRS ${jack_INCLUDEDIR})
-    else()
-        list(APPEND LINKLIBS ${JACK_LIB})
-    endif()
-endif()
 
 # ALSA
 if(${RTAUDIO_API_ALSA})
