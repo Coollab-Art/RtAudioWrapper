@@ -72,15 +72,13 @@ void Player::recreate_stream_adapted_to_current_audio_data()
     _parameters.deviceId     = _current_output_device_id;
     _parameters.firstChannel = 0;
     _parameters.nChannels    = output_channels_count;
-
-    unsigned int nb_frames_per_callback{128 /*256*/}; // TODO(Audio) Try setting to 0?
-    // TODO(Audio) Try settings the RTAUDIO_MINIMIZE_LATENCY flag?
+    unsigned int nb_frames_per_callback{0}; // 0 means we want the smallest number of frames per callback possible.
 
     _backend.openStream(
         &_parameters,
-        nullptr,
+        nullptr, // No input stream needed
         RTAUDIO_FLOAT32,
-        _data.sample_rate, // TODO(Audio) Error when the device does not support this sample_rate   // TODO(Audio) TODO(Philippe) Resample the audio data to make it match the preferredSampleRate of the device
+        _data.sample_rate, // TODO(Audio) Error when the device does not support this sample_rate // TODO(Audio) TODO(Philippe) Resample the audio data to make it match the preferredSampleRate of the device
         &nb_frames_per_callback,
         &audio_callback,
         this
