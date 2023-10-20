@@ -2,6 +2,7 @@
 
 #include <rtaudio/RtAudio.h>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -56,7 +57,7 @@ public:
     auto has_audio_data() const -> bool;
 
     /// Returns the value of the audio data at the given position, while taking all the player properties into account.
-    auto sample(size_t frame_index, size_t channel_index) -> float;
+    auto sample(int64_t frame_index, int64_t channel_index) -> float;
 
     /// Used to get and set the properties.
     auto properties() -> PlayerProperties& { return _properties; }
@@ -91,8 +92,8 @@ private:
     PlayerProperties _properties{};
 
     // Player state
-    size_t _next_frame_to_play{0};          // Next frame of the `_data.samples` buffer that the player needs to play.
-    bool   _play_has_been_requested{false}; // If someone calls play() while we don't have audio data yet, we cannot create the stream yet, but still want to remember we are in the playing state and start playing as soon as we have data.
+    int64_t _next_frame_to_play{0};          // Next frame of the `_data.samples` buffer that the player needs to play.
+    bool    _play_has_been_requested{false}; // If someone calls play() while we don't have audio data yet, we cannot create the stream yet, but still want to remember we are in the playing state and start playing as soon as we have data.
 
     // Output device
     RtAudio      _backend;                     // Owns the stream and connection to the hardware device.

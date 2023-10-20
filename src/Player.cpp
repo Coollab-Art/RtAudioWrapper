@@ -2,6 +2,7 @@
 #include <rtaudio/RtAudio.h>
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -9,7 +10,7 @@
 
 namespace RtAudioW {
 
-static constexpr size_t output_channels_count = 2;
+static constexpr int64_t output_channels_count = 2;
 
 static auto is_API_available() -> bool
 {
@@ -118,9 +119,9 @@ auto Player::pause() -> RtAudioErrorType
 void Player::set_time(float time_in_seconds)
 {
     // TODO(Audio) Store the desired time in seconds too, so that if we switch to an audio data with a different sample rate, we can adjust the _next_frame_to_play to make it match the actual time in seconds.
-    _next_frame_to_play = static_cast<size_t>(
+    _next_frame_to_play = static_cast<int64_t>(
         static_cast<float>(_data.sample_rate)
-            * time_in_seconds
+        * time_in_seconds
     );
 }
 
@@ -136,9 +137,9 @@ auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int 
     auto* out_buffer = static_cast<float*>(output_buffer);
     auto& player     = *static_cast<Player*>(user_data);
 
-    for (size_t frame_idx = 0; frame_idx < frames_count; frame_idx++)
+    for (int64_t frame_idx = 0; frame_idx < frames_count; frame_idx++)
     {
-        for (size_t channel_idx = 0; channel_idx < output_channels_count; ++channel_idx)
+        for (int64_t channel_idx = 0; channel_idx < output_channels_count; ++channel_idx)
         {
             out_buffer[frame_idx * output_channels_count + channel_idx] = // NOLINT(*pointer-arithmetic)
                 player.sample(player._next_frame_to_play, channel_idx);
@@ -149,17 +150,26 @@ auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int 
     return 0;
 }
 
-auto Player::sample(size_t frame_index, size_t channel_index) -> float
+static auto mod(int64_t a, int64_t b) -> int64_t
+{
+    auto res = a % b;
+    if (res < 0)
+        res += b;
+    return res;
+}
+
+auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
 {
     if (_properties.is_muted)
         return 0.f;
 
     auto const sample_index = frame_index * _data.channels_count
                               + channel_index % _data.channels_count;
-    if (sample_index >= _data.samples.size() && !_properties.does_loop)
+    if (sample_index >= static_cast<int64_t>(_data.samples.size())
+        && !_properties.does_loop)
         return 0.f;
 
-    return _data.samples[sample_index % _data.samples.size()]
+    return _data.samples[mod(sample_index, static_cast<int64_t>(_data.samples.size()))]
            * _properties.volume;
 }
 
