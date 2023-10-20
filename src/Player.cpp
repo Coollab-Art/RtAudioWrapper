@@ -17,9 +17,8 @@ static auto is_API_available() -> bool
 
 Player::Player()
 {
-    update_device_if_necessary();
     assert(is_API_available());
-    // assert(is_device_available()); // TODO(Audio) Device should not be an assert, but a warning
+    update_device_if_necessary();
 }
 
 void Player::update_device_if_necessary()
@@ -73,23 +72,17 @@ void Player::recreate_stream_adapted_to_current_audio_data()
     _parameters.deviceId     = _current_output_device_id;
     _parameters.firstChannel = 0;
     _parameters.nChannels    = output_channels_count;
-    // _backend.getDeviceInfo(_parameters.deviceId).nativeFormats; // TODO(Audio) error if doesn't support FLOAT32
 
     unsigned int nb_frames_per_callback{128 /*256*/}; // TODO(Audio) Try setting to 0?
     // TODO(Audio) Try settings the RTAUDIO_MINIMIZE_LATENCY flag?
-    // RtAudioStreamFlags
-    // TODO(Audio) Fix grésillement when changing volume with headphones
-    // TODO(Audio) TODO(Philippe) Resampler l'audio pour qu'il match le preferredSampleRate du device
-    // auto const sr = _backend.getDeviceInfo(_parameters.deviceId).sampleRates;
-    // std::cout << _sample_rate << '\n';
+
     _backend.openStream(
         &_parameters,
         nullptr,
         RTAUDIO_FLOAT32,
-        // _backend.getDeviceInfo(_parameters.deviceId).preferredSampleRate,
-        _data.sample_rate, // TODO(Audio) Error when the device does not support this sample_rate
+        _data.sample_rate, // TODO(Audio) Error when the device does not support this sample_rate   // TODO(Audio) TODO(Philippe) Resample the audio data to make it match the preferredSampleRate of the device
         &nb_frames_per_callback,
-        &audio_callback, // TODO(Audio) Can't move a Player because of the Callback
+        &audio_callback,
         this
     );
 
@@ -169,7 +162,7 @@ auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
 
 auto player() -> Player&
 {
-    static auto instance = Player{};
+    static Player instance{};
     return instance;
 }
 

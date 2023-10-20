@@ -42,6 +42,11 @@ struct PlayerProperties {
 class Player {
 public:
     Player();
+    ~Player()                                    = default;
+    Player(Player const&)                        = delete; // Can't copy nor move
+    auto operator=(Player const&) -> Player&     = delete; // because we pass the address of this object to the audio callback.
+    Player(Player&&) noexcept                    = delete; // And you should be using the global instance returned by
+    auto operator=(Player&&) noexcept -> Player& = delete; // RtAudioW::player() anyways.
 
     /// Receives some data (e.g. a song coming from an mp3 file) and stores it.
     /// After that, the player is ready to play it whenever play() will be called (or starts playing immediately if play() has already been called).
