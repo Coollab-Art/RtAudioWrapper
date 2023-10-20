@@ -6,6 +6,12 @@ namespace RtAudioW {
 
 static constexpr int64_t output_channels_count = 2;
 
+static auto backend() -> RtAudio&
+{
+    static RtAudio instance{};
+    return instance;
+}
+
 #ifndef NDEBUG // Only used by the assert, so unused in Release, which would cause a warning.
 static auto is_API_available() -> bool
 {
@@ -23,7 +29,7 @@ Player::Player()
 
 void Player::update_device_if_necessary()
 {
-    auto const id = _backend.getDefaultOutputDevice();
+    auto const id = backend().getDefaultOutputDevice();
     if (id == _current_output_device_id)
         return;
 
@@ -64,8 +70,8 @@ auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int 
 
 void Player::recreate_stream_adapted_to_current_audio_data()
 {
-    if (_backend.isStreamOpen())
-        _backend.closeStream();
+    if (backend().isStreamOpen())
+        backend().closeStream();
 
     if (!has_audio_data()
         || !has_device())
@@ -77,7 +83,7 @@ void Player::recreate_stream_adapted_to_current_audio_data()
     _parameters.nChannels    = output_channels_count;
     unsigned int nb_frames_per_callback{128};
 
-    _backend.openStream(
+    backend().openStream(
         &_parameters,
         nullptr, // No input stream needed
         RTAUDIO_FLOAT32,
@@ -87,13 +93,13 @@ void Player::recreate_stream_adapted_to_current_audio_data()
         this
     );
 
-        _backend.startStream();
+    backend().startStream();
 }
 
 void Player::set_audio_data(AudioData data)
 {
-    if (_backend.isStreamOpen())
-        _backend.closeStream(); // Otherwise data race with the audio thread that is reading _audio_data. Could cause crashes.
+    if (backend().isStreamOpen())
+        backend().closeStream(); // Otherwise data race with the audio thread that is reading _audio_data. Could cause crashes.
 
     float const current_time = get_time();
 
@@ -157,6 +163,11 @@ auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
 
     return _data.samples[static_cast<size_t>(mod(sample_index, static_cast<int64_t>(_data.samples.size())))]
            * _properties.volume;
+}
+
+void set_error_callback(RtAudioErrorCallback callback)
+{
+    backend().setErrorCallback(std::move(callback));
 }
 
 auto player() -> Player&

@@ -6,9 +6,6 @@
 
 namespace RtAudioW {
 
-// TODO(Audio) Error handing when the various operations can go wrong
-// TODO(Audio) Fix all the messages sent by RtAudio in the console
-
 struct AudioData {
     /// All the samples. If `channels_count` is > 1, the data MUST be in interleaved format:
     /// [Frame 0 | Channel 0]
@@ -98,10 +95,11 @@ private:
     bool    _is_playing{false};     // If someone calls play() while we don't have audio data yet, we cannot create the stream yet, but still want to remember we are in the playing state and start playing as soon as we have data.
 
     // Output device
-    RtAudio      _backend;                     // Owns the stream and connection to the hardware device.
     unsigned int _current_output_device_id{0}; // 0 is an invalid ID.
 };
 
+/// Must be called before any call to player() if you want to be sure to catch all errors.
+void set_error_callback(RtAudioErrorCallback);
 auto player() -> Player&;
 
 } // namespace RtAudioW
