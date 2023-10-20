@@ -93,6 +93,9 @@ void Player::recreate_stream_adapted_to_current_audio_data()
 
 void Player::set_audio_data(AudioData data)
 {
+    if (_backend.isStreamOpen())
+        _backend.closeStream(); // Otherwise data race with the audio thread that is reading _audio_data. Could cause crashes.
+
     float const current_time = get_time();
 
     _data = std::move(data);
