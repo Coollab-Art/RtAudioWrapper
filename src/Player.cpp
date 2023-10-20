@@ -51,9 +51,12 @@ auto audio_callback(void* output_buffer, void* /* input_buffer */, unsigned int 
         for (int64_t channel_idx = 0; channel_idx < output_channels_count; ++channel_idx)
         {
             out_buffer[frame_idx * output_channels_count + channel_idx] = // NOLINT(*pointer-arithmetic)
-                player.sample(player._next_frame_to_play, channel_idx);
+                player._is_playing
+                    ? player.sample(player._next_frame_to_play, channel_idx)
+                    : 0.f;
         }
-        player._next_frame_to_play++;
+        if (player._is_playing)
+            ++player._next_frame_to_play;
     }
 
     return 0;
@@ -84,7 +87,7 @@ void Player::recreate_stream_adapted_to_current_audio_data()
         this
     );
 
-    if (_play_has_been_requested)
+    if (_is_playing)
         _backend.startStream();
 }
 
@@ -101,7 +104,7 @@ void Player::reset_audio_data()
 
 auto Player::play() -> RtAudioErrorType
 {
-    _play_has_been_requested = true;
+    _is_playing = true;
     if (!_backend.isStreamOpen()      // We will start playing when we open the stream, i.e. when we receive audio data
         || _backend.isStreamRunning() // The stream is already started, no need to do anything
     )
@@ -111,12 +114,9 @@ auto Player::play() -> RtAudioErrorType
     return _backend.startStream();
 }
 
-auto Player::pause() -> RtAudioErrorType
+void Player::pause()
 {
-    _play_has_been_requested = false;
-    if (!_backend.isStreamRunning() /* The stream is already inactive, no need to do anything */)
-        return RtAudioErrorType::RTAUDIO_NO_ERROR;
-    return _backend.stopStream();
+    _is_playing = false;
 }
 
 void Player::set_time(float time_in_seconds)

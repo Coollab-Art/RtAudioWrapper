@@ -69,7 +69,7 @@ public:
     /// If no audio data has been set with set_audio_data(), the actual playing will not start until set_audio_data() is called.
     auto play() -> RtAudioErrorType;
     /// Pauses the playing, or does nothing if it was already paused.
-    auto pause() -> RtAudioErrorType;
+    void pause();
     /// Makes the player jump to a specific moment in time.
     void set_time(float time_in_seconds);
     /// Returns the moment in time the player is currently playing.
@@ -94,8 +94,8 @@ private:
     PlayerProperties _properties{};
 
     // Player state
-    int64_t _next_frame_to_play{0};          // Next frame of the `_data.samples` buffer that the player needs to play.
-    bool    _play_has_been_requested{false}; // If someone calls play() while we don't have audio data yet, we cannot create the stream yet, but still want to remember we are in the playing state and start playing as soon as we have data.
+    int64_t _next_frame_to_play{0}; // Next frame of the `_data.samples` buffer that the player needs to play.
+    bool    _is_playing{false};     // If someone calls play() while we don't have audio data yet, we cannot create the stream yet, but still want to remember we are in the playing state and start playing as soon as we have data.
 
     // Output device
     RtAudio      _backend;                     // Owns the stream and connection to the hardware device.
