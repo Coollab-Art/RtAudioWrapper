@@ -88,8 +88,9 @@ jobs:
     name: Linux GCC Debug
     runs-on: ubuntu-22.04
     steps:
-      - name: Install audio libraries
-        run: sudo apt install pulseaudio alsa-utils jackd2
+      - name: Install libraries
+        run: sudo apt install libasound2-dev
+
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -108,8 +109,9 @@ jobs:
     name: Linux GCC Release
     runs-on: ubuntu-22.04
     steps:
-      - name: Install audio libraries
-        run: sudo apt install pulseaudio alsa-utils jackd2
+      - name: Install libraries
+        run: sudo apt install libasound2-dev
+
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -128,8 +130,9 @@ jobs:
     name: Linux Clang Debug
     runs-on: ubuntu-22.04
     steps:
-      - name: Install audio libraries
-        run: sudo apt install pulseaudio alsa-utils jackd2
+      - name: Install libraries
+        run: sudo apt install libasound2-dev
+
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -148,8 +151,9 @@ jobs:
     name: Linux Clang Release
     runs-on: ubuntu-22.04
     steps:
-      - name: Install audio libraries
-        run: sudo apt install pulseaudio alsa-utils jackd2
+      - name: Install libraries
+        run: sudo apt install libasound2-dev
+
       - uses: actions/checkout@v3
         with:
           submodules: recursive
