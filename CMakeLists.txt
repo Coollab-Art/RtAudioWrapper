@@ -58,7 +58,6 @@ elseif(APPLE)
 elseif(xBSD)
     set(RTAUDIO_API_OSS ON)
 elseif(LINUX)
-    # TODO Which API do we use ? All ?
     set(RTAUDIO_API_ALSA ON)
     set(RTAUDIO_API_PULSE ON)
 endif()
@@ -68,11 +67,7 @@ endif()
 # ALSA
 if(${RTAUDIO_API_ALSA})
     set(NEED_PTHREAD ON)
-    find_package(ALSA)
-
-    if(NOT ALSA_FOUND)
-        message(FATAL_ERROR "ALSA API requested but no ALSA dev libraries found")
-    endif()
+    find_package(ALSA REQUIRED)
 
     list(APPEND INCDIRS ${ALSA_INCLUDE_DIR})
     list(APPEND LINKLIBS ${ALSA_LIBRARIES})
@@ -88,8 +83,6 @@ if(${RTAUDIO_API_OSS})
 
     if(OSSAUDIO_LIB)
         list(APPEND LINKLIBS ossaudio)
-
-        # Note: not an error on some systems
     endif()
 
     list(APPEND API_DEFS "-D__LINUX_OSS__ ")
@@ -113,10 +106,8 @@ if(${RTAUDIO_API_CORE})
     find_library(COREAUDIO_LIB CoreAudio)
     find_library(COREFOUNDATION_LIB CoreFoundation)
 
-    # list(APPEND LINKLIBS ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
     target_link_libraries(rtaudio PRIVATE ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
 
-    # list(APPEND LIBS_REQUIRES "-framework CoreAudio -framework CoreFoundation")
     list(APPEND API_DEFS "-D__MACOSX_CORE__ ")
 endif()
 
@@ -133,10 +124,6 @@ if(${NEED_PTHREAD})
         THREADS_PREFER_PTHREAD_FLAG)
     list(APPEND LINKLIBS Threads::Threads)
 endif()
-
-foreach(X IN LISTS API_LIST API_DEFS)
-    message(${X})
-endforeach()
 
 target_link_libraries(RtAudioWrapper PRIVATE ${API_LIST})
 
