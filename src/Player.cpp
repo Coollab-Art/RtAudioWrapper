@@ -87,7 +87,6 @@ void Player::recreate_stream_adapted_to_current_audio_data()
         this
     );
 
-    if (_is_playing)
         _backend.startStream();
 }
 
@@ -109,16 +108,9 @@ void Player::reset_audio_data()
     set_audio_data({});
 }
 
-auto Player::play() -> RtAudioErrorType
+void Player::play()
 {
     _is_playing = true;
-    if (!_backend.isStreamOpen()      // We will start playing when we open the stream, i.e. when we receive audio data
-        || _backend.isStreamRunning() // The stream is already started, no need to do anything
-    )
-    {
-        return RtAudioErrorType::RTAUDIO_NO_ERROR;
-    }
-    return _backend.startStream();
 }
 
 void Player::pause()

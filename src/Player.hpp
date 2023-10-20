@@ -67,7 +67,7 @@ public:
 
     /// Starts or resumes the playing, or does nothing if it was already playing.
     /// If no audio data has been set with set_audio_data(), the actual playing will not start until set_audio_data() is called.
-    auto play() -> RtAudioErrorType;
+    void play();
     /// Pauses the playing, or does nothing if it was already paused.
     void pause();
     /// Makes the player jump to a specific moment in time.
