@@ -152,7 +152,9 @@ auto Player::sample(int64_t frame_index, int64_t channel_index) -> float
 
     auto const sample_index = frame_index * _data.channels_count
                               + channel_index % _data.channels_count;
-    if (sample_index >= static_cast<int64_t>(_data.samples.size())
+    if ((sample_index < 0
+         || sample_index >= static_cast<int64_t>(_data.samples.size())
+        )
         && !_properties.does_loop)
         return 0.f;
 
