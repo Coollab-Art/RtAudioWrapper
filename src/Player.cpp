@@ -16,10 +16,8 @@ static auto is_API_available() -> bool
 Player::Player()
 {
     update_device_if_necessary();
-#if !defined(DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE)
     assert(is_API_available());
     // assert(is_device_available()); // TODO(Audio) Device should not be an assert, but a warning
-#endif
 }
 
 void Player::update_device_if_necessary()

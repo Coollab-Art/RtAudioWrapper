@@ -21,7 +21,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl -D IS_CI=ON
+        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
 
       - name: Build
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
@@ -39,7 +39,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl -D IS_CI=ON
+        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
 
       - name: Build
         run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
@@ -57,7 +57,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -T ClangCL -D IS_CI=ON
+        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -T ClangCL
 
       - name: Build
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
@@ -75,7 +75,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -T ClangCL -D IS_CI=ON
+        run: cmake .\tests -B ${{github.workspace}}\build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -T ClangCL
 
       - name: Build
         run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
@@ -95,7 +95,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11 -D IS_CI=ON
+        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
@@ -115,7 +115,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11 -D IS_CI=ON
+        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
@@ -135,7 +135,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++ -D IS_CI=ON
+        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
@@ -155,7 +155,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++ -D IS_CI=ON
+        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
@@ -173,7 +173,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -D CMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++ -D IS_CI=ON
+        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -D CMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
@@ -191,7 +191,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -D CMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++ -D IS_CI=ON
+        run: cmake ./tests -B ${{github.workspace}}/build -DWARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER=ON -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -D CMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}

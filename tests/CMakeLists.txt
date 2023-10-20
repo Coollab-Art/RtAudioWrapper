@@ -6,10 +6,6 @@ add_executable(${PROJECT_NAME} tests.cpp)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 # ---Include our library---
-if(IS_CI) # ---Hack to make CI work---
-    set(RT_AUDIO_WRAPPER_DISABLE_ASSERTING_AVAILABLE_API_AND_DEVICE ON)
-endif()
-
 add_subdirectory(.. ${CMAKE_CURRENT_SOURCE_DIR}/build/RtAudioWrapper)
 target_link_libraries(${PROJECT_NAME} PRIVATE RtAudioWrapper::RtAudioWrapper)
 
