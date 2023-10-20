@@ -72,7 +72,7 @@ void Player::recreate_stream_adapted_to_current_audio_data()
     _parameters.deviceId     = _current_output_device_id;
     _parameters.firstChannel = 0;
     _parameters.nChannels    = output_channels_count;
-    unsigned int nb_frames_per_callback{0}; // 0 means we want the smallest number of frames per callback possible.
+    unsigned int nb_frames_per_callback{128};
 
     _backend.openStream(
         &_parameters,
