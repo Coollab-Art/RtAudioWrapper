@@ -179,4 +179,10 @@ auto player() -> Player&
     return instance;
 }
 
+void shut_down()
+{
+    if (backend().isStreamOpen())
+        backend().closeStream();
+}
+
 } // namespace RtAudioW

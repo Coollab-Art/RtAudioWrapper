@@ -103,5 +103,7 @@ private:
 /// Must be called before any call to player() if you want to be sure to catch all errors.
 void set_error_callback(RtAudioErrorCallback);
 auto player() -> Player&;
+/// Call this before your application exits.
+void shut_down();
 
 } // namespace RtAudioW
