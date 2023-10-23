@@ -15,10 +15,10 @@ struct AudioData {
     /// For a definition of Frame, see https://youtu.be/jNSiZqSQis4?t=937
     std::vector<float> samples{};
 
-    /// The number of samples per second.
+    /// The number of frames per second.
     unsigned int sample_rate{};
 
-    /// The number of channels (mono vs stereo).
+    /// The number of channels (usually 1 or 2, mono or stereo).
     unsigned int channels_count{};
 };
 
@@ -55,9 +55,9 @@ public:
     /// True iff some data has been set with set_audio_data() and not reset with reset_audio_data().
     auto has_audio_data() const -> bool;
 
-    /// Returns the value of the audio data at the given position, while taking all the player properties into account.
+    /// Returns the value of the audio data at the given position in time, while taking all the player properties into account.
     auto sample(int64_t frame_index, int64_t channel_index) const -> float;
-    /// Returns the value of the audio data at the given position, while ignoring `volume` and `is_muted` properties. It still takes `does_loop` into account.
+    /// Returns the value of the audio data at the given position in time, while ignoring the `volume` and `is_muted` properties of the player. It still takes `does_loop` into account.
     auto sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float;
 
     /// Used to get and set the properties.
@@ -94,7 +94,7 @@ private:
 
     // Player state
     int64_t _next_frame_to_play{0}; // Next frame of the `_data.samples` buffer that the player needs to play.
-    bool    _is_playing{false};     // If someone calls play() while we don't have audio data yet, we cannot create the stream yet, but still want to remember we are in the playing state and start playing as soon as we have data.
+    bool    _is_playing{false};
 
     // Output device
     unsigned int _current_output_device_id{0}; // 0 is an invalid ID.
@@ -102,6 +102,7 @@ private:
 
 /// Must be called before any call to player() if you want to be sure to catch all errors.
 void set_error_callback(RtAudioErrorCallback);
+/// Global instance that you need to use. Having two Players at once doesn't work anyways (because of the way rtaudio handles it I think).
 auto player() -> Player&;
 /// Call this before your application exits.
 void shut_down();

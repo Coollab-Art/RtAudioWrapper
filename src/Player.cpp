@@ -1,6 +1,5 @@
 #include "Player.hpp"
 #include <cassert>
-#include <cstdint>
 
 namespace RtAudioW {
 
