@@ -132,3 +132,5 @@ target_link_libraries(RtAudioWrapper PRIVATE ${API_LIST})
 foreach(API_DEF IN LISTS API_DEFS)
     set_source_files_properties(lib/rtaudio/RtAudio.cpp PROPERTIES COMPILE_FLAGS ${API_DEF})
 endforeach()
+
+install(FILES "lib/rtaudio/LICENSE" DESTINATION "license/rtaudio")
