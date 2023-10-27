@@ -10,7 +10,7 @@ using AudioInputCallback = std::function<void(std::span<float>)>;
 
 class InputStream {
 public:
-    explicit InputStream(AudioInputCallback);
+    InputStream(AudioInputCallback, RtAudioErrorCallback);
     ~InputStream()                                         = default;
     InputStream(InputStream const&)                        = delete; //
     auto operator=(InputStream const&) -> InputStream&     = delete; // Can't copy nor move

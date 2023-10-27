@@ -1,10 +1,12 @@
 #include "InputStream.hpp"
+#include <utility>
 
 namespace RtAudioW {
 
-InputStream::InputStream(AudioInputCallback callback)
+InputStream::InputStream(AudioInputCallback callback, RtAudioErrorCallback error_callback)
     : _callback{std::move(callback)}
 {
+    _backend.setErrorCallback(std::move(error_callback));
     set_device(_backend.getDefaultInputDevice());
 }
 
