@@ -4,7 +4,7 @@ set(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER OFF CACHE BOOL "ON iff you want to tre
 
 add_library(RtAudioWrapper)
 add_library(RtAudioWrapper::RtAudioWrapper ALIAS RtAudioWrapper)
-target_compile_features(RtAudioWrapper PRIVATE cxx_std_11)
+target_compile_features(RtAudioWrapper PRIVATE cxx_std_20)
 
 # ---Add source files---
 if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)

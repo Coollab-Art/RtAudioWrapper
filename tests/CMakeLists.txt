@@ -3,7 +3,7 @@ project(RtAudioWrapper-tests)
 
 # ---Create executable---
 add_executable(${PROJECT_NAME} tests.cpp)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 # ---Include our library---
 add_subdirectory(.. ${CMAKE_CURRENT_SOURCE_DIR}/build/RtAudioWrapper)
