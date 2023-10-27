@@ -156,6 +156,9 @@ auto Player::sample(int64_t frame_index, int64_t channel_index) const -> float
 
 auto Player::sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float
 {
+    if (!has_audio_data())
+        return 0.f;
+
     auto const sample_index = frame_index * _data.channels_count
                               + channel_index % _data.channels_count;
     if ((sample_index < 0
