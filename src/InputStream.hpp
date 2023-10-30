@@ -6,7 +6,7 @@ namespace RtAudioW {
 
 /// Receives a buffer containing audio samples.
 /// There is always 1 channel in the input buffer.
-using AudioInputCallback = std::function<void(std::span<float>)>;
+using AudioInputCallback = std::function<void(std::span<float const>)>;
 
 class InputStream {
 public:
