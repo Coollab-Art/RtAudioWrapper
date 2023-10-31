@@ -57,8 +57,14 @@ public:
 
     /// Returns the value of the audio data at the given position in time, while taking all the player properties into account.
     auto sample(int64_t frame_index, int64_t channel_index) const -> float;
+    /// Returns the value of the audio data at the given position in time, while taking all the player properties into account.
+    /// Does an average over all the samples for the given frame.
+    auto sample(int64_t frame_index) const -> float;
     /// Returns the value of the audio data at the given position in time, while ignoring the `volume` and `is_muted` properties of the player. It still takes `does_loop` into account.
     auto sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float;
+    /// Returns the value of the audio data at the given position in time, while ignoring the `volume` and `is_muted` properties of the player. It still takes `does_loop` into account.
+    /// Does an average over all the samples for the given frame.
+    auto sample_unaltered_volume(int64_t frame_index) const -> float;
     auto current_frame_index() const -> int64_t { return _next_frame_to_play; }
 
     /// Used to get and set the properties.

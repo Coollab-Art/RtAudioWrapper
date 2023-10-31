@@ -170,6 +170,22 @@ auto Player::sample_unaltered_volume(int64_t frame_index, int64_t channel_index)
     return _data.samples[static_cast<size_t>(mod(sample_index, static_cast<int64_t>(_data.samples.size())))];
 }
 
+auto Player::sample(int64_t frame_index) const -> float
+{
+    float res{0.f};
+    for (unsigned int i = 0; i < _data.channels_count; ++i)
+        res += sample(frame_index, i);
+    return res / static_cast<float>(_data.channels_count);
+}
+
+auto Player::sample_unaltered_volume(int64_t frame_index) const -> float
+{
+    float res{0.f};
+    for (unsigned int i = 0; i < _data.channels_count; ++i)
+        res += sample_unaltered_volume(frame_index, i);
+    return res / static_cast<float>(_data.channels_count);
+}
+
 void set_error_callback(RtAudioErrorCallback callback)
 {
     backend().setErrorCallback(std::move(callback));
