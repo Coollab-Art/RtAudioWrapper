@@ -23,6 +23,8 @@ public:
     auto device_info(unsigned int device_id) const -> RtAudio::DeviceInfo;
     ///
     auto current_device_name() const -> std::string const& { return _current_input_device_name; }
+    /// Returns the sample rate of the currently used device.
+    auto sample_rate() const -> unsigned int { return _current_input_device_sample_rate; }
     /// Sets the device to use.
     /// By default, when an InputStream is created it uses the default input device selected by the OS.
     void set_device(unsigned int device_id);
@@ -34,6 +36,7 @@ private:
     mutable RtAudio    _backend{};
     AudioInputCallback _callback{};
     std::string        _current_input_device_name{};
+    unsigned int       _current_input_device_sample_rate{};
 };
 
 } // namespace RtAudioW

@@ -41,10 +41,12 @@ void InputStream::set_device(unsigned int device_id)
     RtAudio::StreamParameters params;
     params.deviceId  = device_id;
     params.nChannels = 1;
-    unsigned int nb_frames{512}; // TODO(Audio) Allow users to customize this?
-    _backend.openStream(nullptr, &params, RTAUDIO_FLOAT32, info.preferredSampleRate, &nb_frames, &audio_input_callback, this);
+    unsigned int nb_frames{512};                         // TODO(Audio) Allow users to customize this?
+    auto const   sample_rate = info.preferredSampleRate; // TODO(Audio) Should we use preferredSampleRate or currentSampleRate?
+    _backend.openStream(nullptr, &params, RTAUDIO_FLOAT32, sample_rate, &nb_frames, &audio_input_callback, this);
     _backend.startStream();
-    _current_input_device_name = info.name;
+    _current_input_device_name        = info.name;
+    _current_input_device_sample_rate = sample_rate;
 }
 
 } // namespace RtAudioW
