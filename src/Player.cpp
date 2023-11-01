@@ -172,6 +172,7 @@ auto Player::sample_unaltered_volume(int64_t frame_index, int64_t channel_index)
 
 auto Player::sample(int64_t frame_index) const -> float
 {
+    // The arithmetic mean is a good way of combining the values of the different channels, according to ChatGPT.
     float res{0.f};
     for (unsigned int i = 0; i < _data.channels_count; ++i)
         res += sample(frame_index, i);
@@ -180,6 +181,7 @@ auto Player::sample(int64_t frame_index) const -> float
 
 auto Player::sample_unaltered_volume(int64_t frame_index) const -> float
 {
+    // The arithmetic mean is a good way of combining the values of the different channels, according to ChatGPT.
     float res{0.f};
     for (unsigned int i = 0; i < _data.channels_count; ++i)
         res += sample_unaltered_volume(frame_index, i);
