@@ -54,7 +54,7 @@ void InputStream::for_each_sample(int64_t samples_count, std::function<void(floa
         if (i < 0) // If `samples` has less than `samples_count` elements this will happen.
             callback(0.f);
         else
-            callback(samples[i]);
+            callback(samples[static_cast<size_t>(i)]);
     }
 }
 
