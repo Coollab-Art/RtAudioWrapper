@@ -1,5 +1,6 @@
 #pragma once
 #include <deque>
+#include <mutex>
 #include <span>
 #include "rtaudio/RtAudio.h"
 
@@ -34,11 +35,13 @@ private:
     friend auto audio_input_callback(void* output_buffer, void* input_buffer, unsigned int frames_count, double stream_time, RtAudioStreamStatus status, void* user_data) -> int;
 
     void set_nb_of_retained_samples(size_t samples_count);
+    /// /!\ YOU MUST LOCK `_samples_mutex` before using this function
     void shrink_samples_to_fit();
 
 private:
     std::deque<float> _samples{};
     size_t            _nb_of_retained_samples{256};
+    std::mutex        _samples_mutex{};
 
     mutable RtAudio _backend{};
     std::string     _current_input_device_name{};

@@ -1,4 +1,5 @@
 #include "InputStream.hpp"
+#include <mutex>
 #include <utility>
 
 namespace RtAudioW {
@@ -34,14 +35,18 @@ void InputStream::shrink_samples_to_fit()
 void InputStream::set_nb_of_retained_samples(size_t samples_count)
 {
     _nb_of_retained_samples = samples_count;
-    shrink_samples_to_fit();
+    // shrink_samples_to_fit(); // Don't shrink here, this will be done during `for_each_sample()`. This avoids locking too often.
 }
 
 void InputStream::for_each_sample(size_t samples_count, std::function<void(float)> const& callback)
 {
     set_nb_of_retained_samples(samples_count); // Now we know exactly how many to store, the next calls to `for_each_sample()` (if they are done with the same `samples_count`) will have the exact data that they want, with no dummy 0s to fill in the missing data.
 
-    auto const samples = _samples; // TODO(Audio) better way of ensuring thread safety
+    auto const samples = [&]() {
+        std::lock_guard const lock{_samples_mutex}; // Lock while we copy
+        shrink_samples_to_fit();                    // Might not be fit, if set_nb_of_retained_samples() has been called.
+        return _samples;
+    }();
     if (samples_count > samples.size())
         for (size_t i = 0; i < samples_count - samples.size(); ++i)
             callback(0.f); // Fill in the first potentially missing samples with 0s.
@@ -54,10 +59,13 @@ auto audio_input_callback(void* /* output_buffer */, void* input_buffer, unsigne
     auto const input = std::span{static_cast<float*>(input_buffer), frames_count};
     auto&      This  = *static_cast<InputStream*>(user_data);
 
-    for (float const sample : input)
     {
-        This._samples.push_back(sample);
-        This.shrink_samples_to_fit();
+        std::lock_guard const lock{This._samples_mutex};
+        for (float const sample : input)
+        {
+            This._samples.push_back(sample);
+            This.shrink_samples_to_fit();
+        }
     }
     return 0;
 }
