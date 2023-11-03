@@ -76,6 +76,8 @@ public:
     void play();
     /// Pauses the playing, or does nothing if it was already paused.
     void pause();
+    ///
+    [[nodiscard]] auto is_playing() const -> bool { return _is_playing; }
     /// Makes the player jump to a specific moment in time.
     void set_time(float time_in_seconds);
     /// Returns the moment in time the player is currently playing.
