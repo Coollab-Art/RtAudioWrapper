@@ -79,6 +79,11 @@ void InputStream::set_device(unsigned int device_id)
     if (_backend.isStreamOpen())
         _backend.closeStream();
 
+    { // Clear the samples, they do not correspond to the new device. (Shouldn't really matter, but I guess this is technically more correct)
+        std::lock_guard const lock{_samples_mutex};
+        _samples.clear();
+    }
+
     auto const                info = _backend.getDeviceInfo(device_id);
     RtAudio::StreamParameters params;
     params.deviceId  = device_id;
