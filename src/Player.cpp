@@ -86,7 +86,7 @@ void Player::recreate_stream_adapted_to_current_audio_data()
         &_parameters,
         nullptr, // No input stream needed
         RTAUDIO_FLOAT32,
-        _data.sample_rate, // TODO(Audio) TODO(Philippe) Resample the audio data to make it match the preferredSampleRate of the device. The current strategy works, unless the device does not support the sample_rate used by our audio data, in which case the audio will be played too slow or too fast.
+        _data.sample_rate, // TODO(Audio-Philippe) Resample the audio data to make it match the preferredSampleRate of the device. The current strategy works, unless the device does not support the sample_rate used by our audio data, in which case the audio will be played too slow or too fast.
         &nb_frames_per_callback,
         &audio_callback,
         this
