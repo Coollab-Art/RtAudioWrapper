@@ -1,21 +1,22 @@
 #pragma once
+#include <deque>
 #include <span>
 #include "rtaudio/RtAudio.h"
 
 namespace RtAudioW {
 
-/// Receives a buffer containing audio samples.
-/// There is always 1 channel in the input buffer.
-using AudioInputCallback = std::function<void(std::span<float const>)>;
-
 class InputStream {
 public:
-    InputStream(AudioInputCallback, RtAudioErrorCallback);
+    InputStream(RtAudioErrorCallback);
     ~InputStream()                                         = default;
     InputStream(InputStream const&)                        = delete; //
     auto operator=(InputStream const&) -> InputStream&     = delete; // Can't copy nor move
     InputStream(InputStream&&) noexcept                    = delete; // because we pass the address of this object to the audio callback.
     auto operator=(InputStream&&) noexcept -> InputStream& = delete; //
+
+    /// Calls the callback for each of the `samples_count` latest samples received through the device.
+    /// This data is always mono-channel, 1 sample == 1 frame.
+    void for_each_sample(size_t samples_count, std::function<void(float)> const& callback);
 
     /// Returns the list of all the ids of input devices.
     auto device_ids() const -> std::vector<unsigned int>;
@@ -32,11 +33,16 @@ public:
 private:
     friend auto audio_input_callback(void* output_buffer, void* input_buffer, unsigned int frames_count, double stream_time, RtAudioStreamStatus status, void* user_data) -> int;
 
+    void set_nb_of_retained_samples(size_t samples_count);
+    void shrink_samples_to_fit();
+
 private:
-    mutable RtAudio    _backend{};
-    AudioInputCallback _callback{};
-    std::string        _current_input_device_name{};
-    unsigned int       _current_input_device_sample_rate{};
+    std::deque<float> _samples{};
+    size_t            _nb_of_retained_samples{256};
+
+    mutable RtAudio _backend{};
+    std::string     _current_input_device_name{};
+    unsigned int    _current_input_device_sample_rate{};
 };
 
 } // namespace RtAudioW
