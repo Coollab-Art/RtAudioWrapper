@@ -38,20 +38,24 @@ void InputStream::set_nb_of_retained_samples(size_t samples_count)
     // shrink_samples_to_fit(); // Don't shrink here, this will be done during `for_each_sample()`. This avoids locking too often.
 }
 
-void InputStream::for_each_sample(size_t samples_count, std::function<void(float)> const& callback)
+void InputStream::for_each_sample(int64_t samples_count, std::function<void(float)> const& callback)
 {
-    set_nb_of_retained_samples(samples_count); // Now we know exactly how many to store, the next calls to `for_each_sample()` (if they are done with the same `samples_count`) will have the exact data that they want, with no dummy 0s to fill in the missing data.
-
     auto const samples = [&]() {
         std::lock_guard const lock{_samples_mutex}; // Lock while we copy
         shrink_samples_to_fit();                    // Might not be fit, if set_nb_of_retained_samples() has been called.
         return _samples;
     }();
-    if (samples_count > samples.size())
-        for (size_t i = 0; i < samples_count - samples.size(); ++i)
-            callback(0.f); // Fill in the first potentially missing samples with 0s.
-    for (float const sample : samples)
-        callback(sample);
+    for ( // Take the `samples_count` last elements of `samples`.
+        int64_t i = static_cast<int64_t>(samples.size()) - samples_count;
+        i < static_cast<int64_t>(samples.size());
+        ++i
+    )
+    {
+        if (i < 0) // If `samples` has less than `samples_count` elements this will happen.
+            callback(0.f);
+        else
+            callback(samples[i]);
+    }
 }
 
 auto audio_input_callback(void* /* output_buffer */, void* input_buffer, unsigned int frames_count, double /* stream_time */, RtAudioStreamStatus /* status */, void* user_data) -> int

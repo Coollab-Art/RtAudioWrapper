@@ -17,7 +17,10 @@ public:
 
     /// Calls the callback for each of the `samples_count` latest samples received through the device.
     /// This data is always mono-channel, 1 sample == 1 frame.
-    void for_each_sample(size_t samples_count, std::function<void(float)> const& callback);
+    void for_each_sample(int64_t samples_count, std::function<void(float)> const& callback);
+    /// You MUST call this function at least once at the beginning to tell us the maximum numbers of samples you will query with `for_each_sample`.
+    /// If that max number changes over time, you can call this function again to update it.
+    void set_nb_of_retained_samples(size_t samples_count);
 
     /// Returns the list of all the ids of input devices.
     auto device_ids() const -> std::vector<unsigned int>;
@@ -34,7 +37,6 @@ public:
 private:
     friend auto audio_input_callback(void* output_buffer, void* input_buffer, unsigned int frames_count, double stream_time, RtAudioStreamStatus status, void* user_data) -> int;
 
-    void set_nb_of_retained_samples(size_t samples_count);
     /// /!\ YOU MUST LOCK `_samples_mutex` before using this function
     void shrink_samples_to_fit();
 
