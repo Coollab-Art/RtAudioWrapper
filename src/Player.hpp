@@ -51,25 +51,25 @@ public:
     /// Deletes the data that was set with set_audio_data().
     void reset_audio_data();
     /// Getter for the audio data.
-    auto audio_data() const -> AudioData const& { return _data; }
+    [[nodiscard]] auto audio_data() const -> AudioData const& { return _data; }
     /// True iff some data has been set with set_audio_data() and not reset with reset_audio_data().
-    auto has_audio_data() const -> bool;
+    [[nodiscard]] auto has_audio_data() const -> bool;
 
     /// Returns the value of the audio data at the given position in time, while taking all the player properties into account.
-    auto sample(int64_t frame_index, int64_t channel_index) const -> float;
+    [[nodiscard]] auto sample(int64_t frame_index, int64_t channel_index) const -> float;
     /// Returns the value of the audio data at the given position in time, while taking all the player properties into account.
     /// Does an average over all the samples for the given frame.
-    auto sample(int64_t frame_index) const -> float;
+    [[nodiscard]] auto sample(int64_t frame_index) const -> float;
     /// Returns the value of the audio data at the given position in time, while ignoring the `volume` and `is_muted` properties of the player. It still takes `does_loop` into account.
-    auto sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float;
+    [[nodiscard]] auto sample_unaltered_volume(int64_t frame_index, int64_t channel_index) const -> float;
     /// Returns the value of the audio data at the given position in time, while ignoring the `volume` and `is_muted` properties of the player. It still takes `does_loop` into account.
     /// Does an average over all the samples for the given frame.
-    auto sample_unaltered_volume(int64_t frame_index) const -> float;
-    auto current_frame_index() const -> int64_t { return _next_frame_to_play; }
+    [[nodiscard]] auto sample_unaltered_volume(int64_t frame_index) const -> float;
+    [[nodiscard]] auto current_frame_index() const -> int64_t { return _next_frame_to_play; }
 
     /// Used to get and set the properties.
-    auto properties() -> PlayerProperties& { return _properties; }
-    auto properties() const -> PlayerProperties const& { return _properties; }
+    [[nodiscard]] auto properties() -> PlayerProperties& { return _properties; }
+    [[nodiscard]] auto properties() const -> PlayerProperties const& { return _properties; }
 
     /// Starts or resumes the playing, or does nothing if it was already playing.
     /// If no audio data has been set with set_audio_data(), the actual playing will not start until set_audio_data() is called.
@@ -81,7 +81,7 @@ public:
     /// Makes the player jump to a specific moment in time.
     void set_time(float time_in_seconds);
     /// Returns the moment in time the player is currently playing.
-    auto get_time() const -> float;
+    [[nodiscard]] auto get_time() const -> float;
 
     /// Checks if the default device has changed (e.g. the user has just plugged in some headphones)
     /// and switches device accordingly.
@@ -92,7 +92,7 @@ private:
     /// Destroys the current stream if there is one, and then creates a new one with a sample rate matching our audio data (or does not create anything if we have no audio data).
     void recreate_stream_adapted_to_current_audio_data();
 
-    auto has_device() const -> bool;
+    [[nodiscard]] auto has_device() const -> bool;
 
 private:
     friend auto audio_callback(void* output_buffer, void* input_buffer, unsigned int frames_count, double stream_time, RtAudioStreamStatus status, void* user_data) -> int;
