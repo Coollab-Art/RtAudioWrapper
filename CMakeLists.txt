@@ -79,7 +79,7 @@ if(${RTAUDIO_API_CORE})
     find_library(COREAUDIO_LIB CoreAudio)
     find_library(COREFOUNDATION_LIB CoreFoundation)
 
-    target_link_libraries(rtaudio PRIVATE ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
+    target_link_libraries(RtAudioWrapper PRIVATE ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
 
     list(APPEND API_DEFS "-D__MACOSX_CORE__ ")
 endif()
