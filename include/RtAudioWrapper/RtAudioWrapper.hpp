@@ -1,4 +1,2 @@
 #pragma once
-
-#include "../../src/InputStream.hpp"
-#include "../../src/Player.hpp"
+#include "rtaudio/RtAudio.h"

@@ -1,43 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER OFF CACHE BOOL "ON iff you want to treat warnings as errors")
-
 add_library(RtAudioWrapper)
 add_library(RtAudioWrapper::RtAudioWrapper ALIAS RtAudioWrapper)
-target_compile_features(RtAudioWrapper PRIVATE cxx_std_20)
+target_compile_features(RtAudioWrapper PRIVATE cxx_std_11)
 
 # ---Add source files---
-if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
-    target_include_directories(RtAudioWrapper PUBLIC include)
-else()
-    target_include_directories(RtAudioWrapper SYSTEM PUBLIC include)
-endif()
+target_sources(RtAudioWrapper PRIVATE lib/rtaudio/RtAudio.cpp)
+target_include_directories(RtAudioWrapper SYSTEM PUBLIC include lib)
 
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*)
-target_sources(RtAudioWrapper PRIVATE ${SOURCE_FILES})
-
-# Set warning level
-if(MSVC)
-    target_compile_options(RtAudioWrapper PRIVATE /W4)
-else()
-    target_compile_options(RtAudioWrapper PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
-endif()
-
-# Maybe enable warnings as errors
-if(WARNINGS_AS_ERRORS_FOR_RTAUDIOWRAPPER)
-    if(MSVC)
-        target_compile_options(RtAudioWrapper PRIVATE /WX)
-    else()
-        target_compile_options(RtAudioWrapper PRIVATE -Werror)
-    endif()
-endif()
-
-# Add RtAudioLibrary
-add_library(rtaudio)
-target_sources(rtaudio PRIVATE lib/rtaudio/RtAudio.cpp)
-target_include_directories(rtaudio SYSTEM PUBLIC lib)
-target_link_libraries(RtAudioWrapper PUBLIC rtaudio)
-
+# ---Configure backend---
 find_package(PkgConfig)
 
 # Check for known non-Linux unix-likes
@@ -133,4 +104,5 @@ foreach(API_DEF IN LISTS API_DEFS)
     set_source_files_properties(lib/rtaudio/RtAudio.cpp PROPERTIES COMPILE_FLAGS ${API_DEF})
 endforeach()
 
+# ---Install license---
 install(FILES "lib/rtaudio/LICENSE" DESTINATION "license/rtaudio")
