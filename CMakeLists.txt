@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 add_library(RtAudioWrapper)
 add_library(RtAudioWrapper::RtAudioWrapper ALIAS RtAudioWrapper)
-target_compile_features(RtAudioWrapper PRIVATE cxx_std_11)
+target_compile_features(RtAudioWrapper PRIVATE cxx_std_14)
 
 # ---Add source files---
 target_sources(RtAudioWrapper PRIVATE lib/rtaudio/RtAudio.cpp)
